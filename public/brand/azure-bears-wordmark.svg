@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 203" role="img" aria-labelledby="title desc">
+  <title id="title">Azure Bears — lettering</title>
+  <desc id="desc">Lettering angular redesenhado a partir da marca fornecida. Não depende de uma fonte instalada.</desc>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 98V0H32V98H22V59L10 51V98ZM10 11V38L22 46V11Z" transform="translate(0 0)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H32V42L10 57V87H22V70L32 63V98H0V49L22 34V11H10V28L0 21Z" transform="translate(37 0)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H10V87H22V0H32V98H0Z" transform="translate(74 0)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H32V39L22 47L32 55V98H22V62L10 54V98H0ZM10 11V40L22 32V11Z" transform="translate(111 0)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H32V23L22 29V11H10V36L22 44V56L10 48V87H22V75L32 69V98H0Z" transform="translate(148 0)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H32V39L22 47L32 55V98H0ZM10 11V40L22 32V11ZM10 54V87H22V62Z" transform="translate(0 105)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H32V23L22 29V11H10V36L22 44V56L10 48V87H22V75L32 69V98H0Z" transform="translate(37 105)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 98V0H32V98H22V59L10 51V98ZM10 11V38L22 46V11Z" transform="translate(74 105)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H32V39L22 47L32 55V98H22V62L10 54V98H0ZM10 11V40L22 32V11Z" transform="translate(111 105)"/>
+<path fill="#ffffff" fill-rule="evenodd" d="M0 0H32V29L22 22V11H10V34L32 51V98H0V72L10 79V87H22V59L0 43Z" transform="translate(148 105)"/>
+</svg>
