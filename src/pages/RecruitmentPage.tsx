@@ -8,6 +8,7 @@ import type { FormValues, Step } from '../features/recruitment/form'
 import { QuestionField } from '../features/recruitment/QuestionField'
 import { DirectorateForm } from '../features/recruitment/DirectorateForm'
 import { GameIcon } from '../features/recruitment/GameIcon'
+import { SubmissionPanel } from '../features/submissions/SubmissionPanel'
 import '../styles/recruitment.css'
 
 export function RecruitmentPage() {
@@ -15,6 +16,7 @@ export function RecruitmentPage() {
   const [step, setStep] = useState<Step>('game')
   const [hasErrors, setHasErrors] = useState(false)
   const [review, setReview] = useState<FormValues | null>(null)
+  const [submissionLocked, setSubmissionLocked] = useState(false)
   const heading = useRef<HTMLHeadingElement>(null)
   const form = useForm<FormValues>({ defaultValues: emptyValues(), shouldUnregister: false })
   const [gameId, role, selectedIntentions] = useWatch({ control: form.control, name: ['game', 'role', 'answers.intentions'] })
@@ -62,21 +64,21 @@ export function RecruitmentPage() {
   }
 
   return <div className="recruitment-page page-container">
-    <div className="recruit-intro">
+    <div className="recruit-intro" data-reveal>
       <p className="eyebrow text-accent">Processos seletivos / Azure Bears</p>
       <h1>SEU PRÓXIMO<br /><span className="text-accent">TIME É AQUI.</span></h1>
       <p>Dentro ou fora do servidor. Encontre seu lugar na Azure e represente a UTFPR com a gente.</p>
     </div>
-    <p className="recruit-preview-notice"><span aria-hidden="true" />Prévia do formulário. O envio de inscrições ainda não está disponível. Suas respostas ficam apenas nesta página e são descartadas ao sair ou recarregar.</p>
+    <p className="recruit-preview-notice"><span aria-hidden="true" />Preencha suas respostas e revise antes de enviar. A disponibilidade do recebimento será informada na etapa final. Sua inscrição só estará registrada após a confirmação com protocolo.</p>
 
     {!started ? <section aria-label="Escolha como participar" className="recruit-paths">
-      <article className="recruit-path recruit-path-competitive">
+      <article className="recruit-path recruit-path-competitive" data-reveal data-motion-card>
         <div className="recruit-card-top"><Gamepad2 size={30} aria-hidden="true" /><span className="eyebrow">01 / Competição</span></div>
         <h2>TIMES<br />COMPETITIVOS</h2>
         <p>Seu jogo. Seu time. Sua universidade. Participe como Player, Coach, Analista ou Manager.</p>
         <button className="button button-white" onClick={() => { setStarted('competitive'); goTo('game') }}>Escolher meu jogo <ArrowRight size={18} aria-hidden="true" /></button>
       </article>
-      <article className="recruit-path recruit-path-directors">
+      <article className="recruit-path recruit-path-directors" data-reveal data-motion-card>
         <div className="recruit-card-top"><Users size={30} aria-hidden="true" /><span className="eyebrow">02 / Gestão</span></div>
         <h2>DIRETORIA</h2>
         <p>Ajude a construir a Azure além das partidas. Encontre seu lugar em Modalidades, Eventos, Marketing, Administrativo ou Produtos.</p>
@@ -104,7 +106,7 @@ export function RecruitmentPage() {
           {step === 'game' && <fieldset className="recruit-field">
             <legend>Por qual jogo você quer participar do time?</legend>
             <p className="recruit-hint">Escolha uma modalidade para começar.</p>
-            <div className="recruit-games">{games.filter((item) => item.visible).map((item) => <label className="recruit-game" key={item.id}>
+            <div className="recruit-games">{games.filter((item) => item.visible).map((item) => <label className="recruit-game" key={item.id} data-motion-card>
               <input type="radio" value={item.id} {...form.register('game', { onChange: () => { clearGameAnswers(); form.clearErrors('game') } })} aria-invalid={!!form.formState.errors.game} aria-describedby={form.formState.errors.game ? 'game-error' : undefined} />
               <GameIcon key={item.icon} src={item.icon} />
               <span className="recruit-game-name">{item.name}</span>
@@ -130,24 +132,24 @@ export function RecruitmentPage() {
           {questionsFor(step, values).map((question) => <QuestionField key={`${step}-${gameId}-${question.id}`} question={question} />)}
 
           {step === 'review' && review && <>
-            <div className="recruit-review-notice" role="status"><strong>Respostas revisadas, inscrição ainda não enviada.</strong><p>O recebimento das inscrições estará disponível em breve. Esta prévia não reserva uma vaga nem registra sua participação.</p></div>
+            {!submissionLocked && <div className="recruit-review-notice"><strong>Confira suas respostas antes de enviar.</strong><p>A revisão ainda não registra sua inscrição. Utilize a opção de envio abaixo quando estiver disponível.</p></div>}
             <div className="recruit-review-section">
-              <div className="recruit-review-title"><h3>Modalidade e função</h3><button type="button" className="text-link" onClick={() => goTo('game')}>Editar jogo</button><button type="button" className="text-link" onClick={() => goTo('role')}>Editar função</button></div>
+              <div className="recruit-review-title"><h3>Modalidade e função</h3><button type="button" className="text-link" disabled={submissionLocked} onClick={() => goTo('game')}>Editar jogo</button><button type="button" className="text-link" disabled={submissionLocked} onClick={() => goTo('role')}>Editar função</button></div>
               <dl><div><dt>Jogo</dt><dd>{game?.name}</dd></div><div><dt>Função</dt><dd>{review.role}</dd></div><div><dt>Ciência das regras</dt><dd>Sim, estou ciente.</dd></div></dl>
             </div>
             {(['personal', 'academic', ...(review.role === 'Player' ? ['details'] : []), 'final'] as Step[]).map((item) => <section className="recruit-review-section" key={item}>
-              <div className="recruit-review-title"><h3>{stepLabels[item]}</h3><button type="button" className="text-link" onClick={() => goTo(item)}>Editar<span className="sr-only"> {stepLabels[item]}</span></button></div>
+              <div className="recruit-review-title"><h3>{stepLabels[item]}</h3><button type="button" className="text-link" disabled={submissionLocked} onClick={() => goTo(item)}>Editar<span className="sr-only"> {stepLabels[item]}</span></button></div>
               <dl>{questionsFor(item, review).map((question) => {
                 const answer = review.answers[question.id]
                 return <div key={question.id}><dt>{question.label}</dt><dd>{Array.isArray(answer) ? (answer.length ? <ul>{answer.map((value) => <li key={value}>{value}</li>)}</ul> : 'Não informado') : answer || 'Não informado'}</dd></div>
               })}</dl>
             </section>)}
-            <p id="recruit-submit-unavailable" className="recruit-hint">Envio indisponível nesta prévia. Nenhum dado foi enviado ou salvo.</p>
+            <SubmissionPanel kind="competitive" data={review} onLockChange={setSubmissionLocked} />
           </>}
 
           <div className="recruit-actions">
-            <button type="button" className="recruit-back" onClick={() => { if (stepIndex === 0) setStarted(false); else goTo(steps[stepIndex - 1]) }}><ArrowLeft size={17} aria-hidden="true" />{stepIndex === 0 ? 'Ver opções' : 'Voltar'}</button>
-            {step === 'review' ? <button type="button" className="button button-white" disabled aria-describedby="recruit-submit-unavailable">Enviar inscrição <ArrowRight size={17} aria-hidden="true" /></button> : <button type="submit" className="button button-white">{step === 'rules' ? 'Sim, estou ciente.' : step === 'final' ? 'Revisar inscrição' : 'Continuar'}<ArrowRight size={17} aria-hidden="true" /></button>}
+            <button type="button" className="recruit-back" disabled={submissionLocked} onClick={() => { if (stepIndex === 0) setStarted(false); else goTo(steps[stepIndex - 1]) }}><ArrowLeft size={17} aria-hidden="true" />{stepIndex === 0 ? 'Ver opções' : 'Voltar'}</button>
+            {step !== 'review' && <button type="submit" className="button button-white">{step === 'rules' ? 'Sim, estou ciente.' : step === 'final' ? 'Revisar inscrição' : 'Continuar'}<ArrowRight size={17} aria-hidden="true" /></button>}
           </div>
         </form>
       </div>

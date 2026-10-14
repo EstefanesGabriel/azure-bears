@@ -10,7 +10,7 @@ interface Props {
 
 export function SectionHeading({ id, eyebrow, title, link }: Props) {
   return (
-    <div className="section-heading">
+    <div className="section-heading" data-reveal>
       <div>
         <p className="eyebrow section-eyebrow">{eyebrow}</p>
         <h2 id={id}>{title}</h2>

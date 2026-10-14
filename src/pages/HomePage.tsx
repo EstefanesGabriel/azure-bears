@@ -32,6 +32,7 @@ function Hero() {
     <section
       className={`hero ${site.heroImage || site.heroVideo ? 'hero-with-media' : ''}`}
       aria-labelledby="hero-title"
+      data-parallax
     >
       {site.heroVideo ? (
         <video
@@ -78,13 +79,13 @@ function Hero() {
           <span className="eyebrow hero-edition">O NOSSO PRÓXIMO CAPÍTULO</span>
         </div>
         <div className="hero-body">
-          <h1 id="hero-title">
+          <h1 id="hero-title" data-reveal>
             {home.hero.title[0]}
             <br />
             <span>{home.hero.title[1]}</span>
           </h1>
-          <p className="hero-description">{home.hero.description}</p>
-          <a href="#azure" className="button button-white">
+          <p className="hero-description" data-reveal>{home.hero.description}</p>
+          <a href="#azure" className="button button-white" data-reveal>
             Conheça a Azure <ArrowUpRight size={20} aria-hidden="true" />
           </a>
         </div>
@@ -138,6 +139,8 @@ function NewsSection() {
               to={`/noticias/${item.slug}`}
               key={item.id}
               className="news-card"
+              data-reveal
+              data-motion-card
             >
               <Media image={item.image} label="AZURE ATUAL" />
               <p className="eyebrow card-category">
@@ -158,7 +161,7 @@ function NewsSection() {
           ))}
         </div>
       ) : (
-        <div className="news-empty">
+        <div className="news-empty" data-reveal>
           <div className="journal-art" aria-hidden="true">
             <span className="eyebrow">AZURE BEARS / JOURNAL</span>
             <div className="journal-circle" />
@@ -207,6 +210,8 @@ function TeamsSection() {
             {modalities.map((item) => (
               <Link
                 className="team-card"
+                data-reveal
+                data-motion-card
                 to={`/equipes/${item.slug}`}
                 key={item.id}
               >
@@ -219,7 +224,7 @@ function TeamsSection() {
             ))}
           </div>
         ) : (
-          <div className="teams-empty">
+          <div className="teams-empty" data-reveal>
             <div className="teams-wordmark" aria-hidden="true">
               <img className="teams-brand-lettering" src={site.wordmark} alt="" />
               <div className="teams-wordmark-caption">
@@ -279,6 +284,8 @@ function StoreSection() {
             {visible.map((item) => (
               <Link
                 className="product-card"
+                data-reveal
+                data-motion-card
                 to={`/loja/${item.slug}`}
                 key={item.id}
               >
@@ -306,7 +313,7 @@ function StoreSection() {
           </div>
         </>
       ) : (
-        <div className="store-empty">
+        <div className="store-empty" data-reveal>
           <div className="store-art" aria-hidden="true">
             <span className="eyebrow">AZURE BEARS — OFF THE GAME</span>
             <span className="store-art-type">
@@ -345,7 +352,7 @@ function StoreSection() {
 
 function PartnersSection() {
   return (
-    <section className="partners-section" aria-labelledby="partners-title">
+    <section className="partners-section" aria-labelledby="partners-title" data-reveal>
       <div className="page-container">
         <p className="eyebrow text-muted">Juntos, vamos além</p>
         <h2 id="partners-title">QUEM FORTALECE O NOSSO JOGO.</h2>
@@ -390,6 +397,7 @@ export function HomePage() {
         id="azure"
         className="page-container introduction"
         aria-labelledby="intro-title"
+        data-reveal
       >
         <div>
           <p className="eyebrow text-muted">Muito além de uma partida</p>
@@ -416,7 +424,7 @@ export function HomePage() {
         className="community-section"
         aria-labelledby="community-title"
       >
-        <div className="page-container community-inner">
+        <div className="page-container community-inner" data-reveal>
           <div>
             <p className="eyebrow">{home.community.eyebrow}</p>
             <h2 id="community-title">{home.community.title}</h2>

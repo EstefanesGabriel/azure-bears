@@ -64,10 +64,10 @@ export function QuestionField({ question }: { question: Question }) {
         {question.options?.map((option) => <option value={option} key={option}>{option}</option>)}
       </select>
     ) : question.kind === 'textarea' ? (
-      <textarea {...common} ref={field.ref} value={value} onChange={field.onChange} rows={4} />
+      <textarea {...common} ref={field.ref} value={value} onChange={field.onChange} rows={4} maxLength={4000} />
     ) : (
       <input {...common} ref={field.ref} type={question.kind ?? 'text'} value={value} onChange={field.onChange}
-        autoComplete={question.autoComplete ?? 'off'} />
+        autoComplete={question.autoComplete ?? 'off'} maxLength={4000} />
     )}
   </div>
 }

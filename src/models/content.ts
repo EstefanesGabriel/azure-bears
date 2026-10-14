@@ -27,6 +27,7 @@ export interface Product {
   category: 'Vestuário' | 'Acessórios'
   referencePrice?: number
   image?: ImageAsset
+  requests?: { enabled: boolean; variants: string[]; sizes: string[]; maxQuantity: number }
 }
 
 export interface Partner {

@@ -1,0 +1,10 @@
+.submission-panel { border: 1px solid #729bff55; padding: 24px; margin-top: 28px; line-height: 1.8; font-size: 13px; background: #729bff0c; }
+.submission-panel h3 { font-size: 30px; }
+.submission-panel p { margin-block: 12px; }
+.submission-panel a { color: #b5caff; overflow-wrap: anywhere; text-decoration: underline; }
+.submission-ack { display: flex; align-items: flex-start; gap: 12px; margin-block: 22px; cursor: pointer; }
+.submission-ack input { margin-top: 5px; flex: 0 0 auto; width: 18px; height: 18px; accent-color: var(--color-accent); }
+.submission-challenge { min-height: 65px; margin-bottom: 20px; }
+.submission-panel button:disabled { opacity: .5; cursor: not-allowed; }
+.submission-protocol { overflow-wrap: anywhere; }
+@media (max-width: 500px) { .submission-panel { padding: 16px 10px; } }

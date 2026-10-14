@@ -5,6 +5,7 @@ import type { FieldPath } from 'react-hook-form'
 import { directorateSchema, directorateSections } from './directorate'
 import type { AnswerValues } from './form'
 import { QuestionField } from './QuestionField'
+import { SubmissionPanel } from '../submissions/SubmissionPanel'
 
 const steps = [...directorateSections.map(({ id, title }) => ({ id, title })), { id: 'review', title: 'Revise sua inscrição' }]
 
@@ -13,6 +14,7 @@ export function DirectorateForm({ onBack }: { onBack: () => void }) {
   const [stepIndex, setStepIndex] = useState(0)
   const [hasErrors, setHasErrors] = useState(false)
   const [review, setReview] = useState<AnswerValues | null>(null)
+  const [submissionLocked, setSubmissionLocked] = useState(false)
   const heading = useRef<HTMLHeadingElement>(null)
   const step = steps[stepIndex]
   const isReview = step.id === 'review'
@@ -82,15 +84,15 @@ export function DirectorateForm({ onBack }: { onBack: () => void }) {
           ))}
 
           {isReview && review && <>
-            <div className="recruit-review-notice" role="status">
-              <strong>Respostas revisadas, inscrição ainda não enviada.</strong>
-              <p>O recebimento das inscrições estará disponível em breve. Esta prévia não registra sua participação no processo da diretoria.</p>
-            </div>
+            {!submissionLocked && <div className="recruit-review-notice">
+              <strong>Confira suas respostas antes de enviar.</strong>
+              <p>A revisão ainda não registra sua inscrição. Utilize a opção de envio abaixo quando estiver disponível.</p>
+            </div>}
             {directorateSections.map((section, index) => (
               <section className="recruit-review-section" key={section.id}>
                 <div className="recruit-review-title">
                   <h3>{section.title}</h3>
-                  <button type="button" className="text-link" onClick={() => goTo(index)}>
+                  <button type="button" className="text-link" disabled={submissionLocked} onClick={() => goTo(index)}>
                     Editar<span className="sr-only"> {section.title}</span>
                   </button>
                 </div>
@@ -99,18 +101,14 @@ export function DirectorateForm({ onBack }: { onBack: () => void }) {
                 ))}</dl>
               </section>
             ))}
-            <p id="directorate-submit-unavailable" className="recruit-hint">Envio indisponível nesta prévia. Nenhum dado foi enviado ou salvo.</p>
+            <SubmissionPanel kind="directorate" data={review} onLockChange={setSubmissionLocked} />
           </>}
 
           <div className="recruit-actions">
-            <button type="button" className="recruit-back" onClick={() => stepIndex === 0 ? onBack() : goTo(stepIndex - 1)}>
+            <button type="button" className="recruit-back" disabled={submissionLocked} onClick={() => stepIndex === 0 ? onBack() : goTo(stepIndex - 1)}>
               <ArrowLeft size={17} aria-hidden="true" />{stepIndex === 0 ? 'Ver opções' : 'Voltar'}
             </button>
-            {isReview ? (
-              <button type="button" className="button button-white" disabled aria-describedby="directorate-submit-unavailable">
-                Enviar inscrição <ArrowRight size={17} aria-hidden="true" />
-              </button>
-            ) : (
+            {!isReview && (
               <button type="submit" className="button button-white">
                 {isLastSection ? 'Revisar inscrição' : 'Continuar'}<ArrowRight size={17} aria-hidden="true" />
               </button>

@@ -7,6 +7,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { HomePage } from '../pages/HomePage'
 import { RecruitmentPage } from '../pages/RecruitmentPage'
 import { AboutPage } from '../pages/AboutPage'
+import { MotionEffects } from '../components/MotionEffects'
 
 const pages = [...navigation.slice(1), ...secondaryNavigation]
 
@@ -84,6 +85,7 @@ export function App() {
 
   return (
     <>
+      <MotionEffects />
       <SiteHeader />
       <main id="conteudo" tabIndex={-1}>
         <Routes>

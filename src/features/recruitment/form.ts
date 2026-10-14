@@ -34,7 +34,7 @@ export function questionSchema(question: Question): z.ZodType {
       .refine((value) => question.optional || value.length > 0, 'Selecione pelo menos uma opção.')
       .refine((value) => value.every((item) => question.options?.includes(item)), 'Selecione uma opção válida.')
   }
-  return z.string().default('').transform((value) => value.trim())
+  return z.string().max(4000, 'Use no máximo 4.000 caracteres.').default('').transform((value) => value.trim())
     .refine((value) => question.optional || value.length > 0, 'Preencha este campo.')
     .refine((value) => !value || !question.options || question.options.includes(value), 'Selecione uma opção válida.')
     .refine((value) => !value || question.kind !== 'email' || z.email().safeParse(value).success, 'Informe um e-mail válido, como nome@exemplo.com.')

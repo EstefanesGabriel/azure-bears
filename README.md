@@ -15,6 +15,8 @@ No PowerShell com scripts bloqueados, utilize `npm.cmd install` e `npm.cmd run d
 
 `npm run build` verifica TypeScript e gera o site estático em `dist`. `npm run preview` permite conferir esse build localmente.
 
+Para colocar o site no ar pela primeira vez, siga [Publicar no Cloudflare Pages](docs/cloudflare-pages.md). O guia usa o repositório GitHub existente e o endereço gratuito `pages.dev`.
+
 ## Escopo desta etapa
 
 - Home responsiva com hero, apresentação, notícias, equipes, loja, parceiros, participação e rodapé.
@@ -23,7 +25,7 @@ No PowerShell com scripts bloqueados, utilize `npm.cmd install` e `npm.cmd run d
 - Diretoria e Processos seletivos acessíveis no rodapé e no menu mobile.
 - Seletivas em `/seletivas`: escolha entre times competitivos e diretoria, com formulários por etapas e revisão.
 - Destinos das demais páginas mostram um aviso de disponibilidade. Não são implementações dessas páginas.
-- Sem serviços externos, coleta de dados, Cloudflare, armazenamento remoto, autenticação ou pagamentos.
+- Recebimento preparado com Cloudflare Pages Functions, Turnstile e Apps Script/Google Sheets; desligado até configurar os serviços. Sem autenticação de visitantes ou pagamentos.
 
 ## Conteúdo e materiais oficiais
 
@@ -67,6 +69,14 @@ Coloque as imagens em `public/images/about/`, preservando os nomes abaixo. Os `s
 
 Ao escolher as fotos, ajuste os textos alternativos (`alt`) em `src/data/about.ts` para descrever os materiais reais. Os marcos da história preservam a imagem inteira; as demais imagens preenchem a área reservada com `object-fit: cover`.
 
+## Movimento e interações
+
+- `src/components/MotionEffects.tsx`: entradas ao entrar na tela, com sequência curta, profundidade do hero acompanhando o mouse e inclinação/brilho dos cards interativos. Inclui uma linha de progresso da leitura no topo.
+- `src/styles/motion.css`: transições de botões, ícones, imagens, seleção de jogos e abertura do menu mobile.
+- Use `data-reveal` em um bloco para animar sua primeira entrada, `data-motion-card` em um card interativo e `data-parallax` no contêiner da arte do hero.
+
+Os efeitos respeitam `prefers-reduced-motion`, inclusive quando a preferência muda com a página aberta. Inclinação e profundidade são limitadas a dispositivos com mouse; não interferem na rolagem por toque. Não há movimentos em loop nem alteração dos números e textos. Campos de formulário permanecem estáveis. O conteúdo continua visível sem animações; foco de teclado interrompe uma entrada em andamento. Observadores, eventos e animações são limpos ao trocar de página.
+
 ## Formulário de seletivas
 
 O botão **Faça parte** abre `/seletivas`. No competitivo, o fluxo é: jogo → ciência das regras → informações pessoais → informações acadêmicas → função → perguntas do jogo (somente Player) → perguntas finais → revisão.
@@ -79,7 +89,15 @@ Na diretoria, o fluxo é: nome, nick, e-mail e celular com DDD → motivação e
 - `src/features/recruitment/directorate.ts` e `DirectorateForm.tsx`: perguntas, áreas, validação e fluxo da diretoria.
 - `src/pages/RecruitmentPage.tsx` e `src/styles/recruitment.css`: fluxo, revisão e visual responsivo.
 
-As respostas ficam somente na memória da página; não há localStorage, envio de e-mail ou chamadas para um serviço de recebimento. O aviso de prévia aparece desde o início e **Enviar inscrição** permanece desabilitado. A integração de envio será feita em uma etapa futura; não há confirmação fictícia de inscrição.
+As respostas ficam na memória da página até o envio. A revisão consulta a disponibilidade da API e permite enviar somente quando a integração estiver configurada e o processo aberto. A confirmação inclui um protocolo após a gravação no Google Sheets. Não há localStorage nem envio de e-mail. Em uma falha de confirmação, o formulário mantém o mesmo protocolo e as mesmas respostas para tentar novamente.
+
+### Ativar o recebimento no Google Sheets
+
+Siga o guia completo em [docs/google-sheets.md](docs/google-sheets.md). Ele explica como criar as duas planilhas privadas, publicar os scripts de `integrations/google-apps-script`, configurar Turnstile/Cloudflare e abrir uma edição em `src/data/submissions.ts`. As configurações vêm desativadas e nenhum segredo real acompanha o código.
+
+Os formulários existentes de competitivo e diretoria já usam o componente de envio. O serviço também aceita solicitações da loja, com validação de produto/opções; a página e o formulário da loja continuam para a etapa própria.
+
+O arquivo das seletivas organiza o competitivo em abas por modalidade (VALORANT, CS2, League of Legends, Brawl Stars, EA FC e Free Fire), além de Diretoria. Cada aba mantém o histórico identificado por edição. O guia também explica como usar o endereço gratuito `pages.dev` no Turnstile, sem comprar domínio.
 
 Execute `npm.cmd test` (Node.js 22.13+ ou 24+) para verificar as validações e condicionais, e `npm.cmd run build` para validar os tipos e gerar a aplicação.
 
