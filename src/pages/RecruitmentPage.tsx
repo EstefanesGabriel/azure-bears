@@ -6,10 +6,12 @@ import { games, roles, rules } from '../features/recruitment/config'
 import { activeSteps, applicationSchema, emptyValues, questionsFor, stepLabels, validateStep } from '../features/recruitment/form'
 import type { FormValues, Step } from '../features/recruitment/form'
 import { QuestionField } from '../features/recruitment/QuestionField'
+import { DirectorateForm } from '../features/recruitment/DirectorateForm'
+import { GameIcon } from '../features/recruitment/GameIcon'
 import '../styles/recruitment.css'
 
 export function RecruitmentPage() {
-  const [started, setStarted] = useState(false)
+  const [started, setStarted] = useState<false | 'competitive' | 'directorate'>(false)
   const [step, setStep] = useState<Step>('game')
   const [hasErrors, setHasErrors] = useState(false)
   const [review, setReview] = useState<FormValues | null>(null)
@@ -22,7 +24,7 @@ export function RecruitmentPage() {
   const values = { ...form.getValues(), game: gameId, role, answers: { ...form.getValues('answers'), intentions: selectedIntentions } }
 
   useEffect(() => {
-    if (!started) return
+    if (started !== 'competitive') return
     heading.current?.focus({ preventScroll: true })
     heading.current?.scrollIntoView({ behavior: 'instant', block: 'start' })
   }, [step, started])
@@ -72,15 +74,15 @@ export function RecruitmentPage() {
         <div className="recruit-card-top"><Gamepad2 size={30} aria-hidden="true" /><span className="eyebrow">01 / Competição</span></div>
         <h2>TIMES<br />COMPETITIVOS</h2>
         <p>Seu jogo. Seu time. Sua universidade. Participe como Player, Coach, Analista ou Manager.</p>
-        <button className="button button-white" onClick={() => { setStarted(true); goTo('game') }}>Escolher meu jogo <ArrowRight size={18} aria-hidden="true" /></button>
+        <button className="button button-white" onClick={() => { setStarted('competitive'); goTo('game') }}>Escolher meu jogo <ArrowRight size={18} aria-hidden="true" /></button>
       </article>
       <article className="recruit-path recruit-path-directors">
         <div className="recruit-card-top"><Users size={30} aria-hidden="true" /><span className="eyebrow">02 / Gestão</span></div>
         <h2>DIRETORIA</h2>
-        <p>Ajude a construir a Azure além das partidas. O processo para a diretoria será disponibilizado em uma próxima etapa.</p>
-        <span className="recruit-coming-soon">Em breve</span>
+        <p>Ajude a construir a Azure além das partidas. Encontre seu lugar em Modalidades, Eventos, Marketing, Administrativo ou Produtos.</p>
+        <button className="button button-white" onClick={() => setStarted('directorate')}>Quero fazer parte <ArrowRight size={18} aria-hidden="true" /></button>
       </article>
-    </section> : <FormProvider {...form}>
+    </section> : started === 'directorate' ? <DirectorateForm onBack={() => setStarted(false)} /> : <FormProvider {...form}>
       <div className="recruit-workspace">
         <aside className="recruit-sidebar" aria-label="Progresso da inscrição">
           <p className="eyebrow text-accent">Times competitivos</p>
@@ -104,7 +106,7 @@ export function RecruitmentPage() {
             <p className="recruit-hint">Escolha uma modalidade para começar.</p>
             <div className="recruit-games">{games.filter((item) => item.visible).map((item) => <label className="recruit-game" key={item.id}>
               <input type="radio" value={item.id} {...form.register('game', { onChange: () => { clearGameAnswers(); form.clearErrors('game') } })} aria-invalid={!!form.formState.errors.game} aria-describedby={form.formState.errors.game ? 'game-error' : undefined} />
-              <span className="recruit-game-code" aria-hidden="true">{item.shortName}</span>
+              <GameIcon key={item.icon} src={item.icon} />
               <span className="recruit-game-name">{item.name}</span>
               <span className="recruit-game-check" aria-hidden="true"><Check size={15} /></span>
             </label>)}</div>

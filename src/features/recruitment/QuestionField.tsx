@@ -1,10 +1,10 @@
 import { useController, useFormContext } from 'react-hook-form'
 import { days, periods } from './config'
 import type { Question } from './config'
-import type { FormValues } from './form'
+import type { AnswerValues } from './form'
 
 export function QuestionField({ question }: { question: Question }) {
-  const { control } = useFormContext<FormValues>()
+  const { control } = useFormContext<AnswerValues>()
   const multiple = question.kind === 'multiple' || question.kind === 'availability'
   const { field, fieldState: { error } } = useController({
     control, name: `answers.${question.id}`, defaultValue: multiple ? [] : '',

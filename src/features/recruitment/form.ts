@@ -2,11 +2,13 @@ import { z } from 'zod'
 import { academicQuestions, finalQuestions, games, personalQuestions, roles } from './config.ts'
 import type { Question } from './config.ts'
 
-export type FormValues = {
+export type AnswerValues = {
+  answers: Record<string, string | string[]>
+}
+export type FormValues = AnswerValues & {
   game: string
   acknowledged: boolean
   role: string
-  answers: Record<string, string | string[]>
 }
 export type Step = 'game' | 'rules' | 'personal' | 'academic' | 'role' | 'details' | 'final' | 'review'
 export const stepLabels: Record<Step, string> = {
@@ -35,6 +37,7 @@ export function questionSchema(question: Question): z.ZodType {
   return z.string().default('').transform((value) => value.trim())
     .refine((value) => question.optional || value.length > 0, 'Preencha este campo.')
     .refine((value) => !value || !question.options || question.options.includes(value), 'Selecione uma opção válida.')
+    .refine((value) => !value || question.kind !== 'email' || z.email().safeParse(value).success, 'Informe um e-mail válido, como nome@exemplo.com.')
     .refine((value) => {
       if (!value || question.kind !== 'url') return true
       try { return ['https:', 'http:'].includes(new URL(value).protocol) } catch { return false }

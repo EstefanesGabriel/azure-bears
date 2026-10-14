@@ -1,7 +1,7 @@
 export type Question = {
   id: string
   label: string
-  kind?: 'text' | 'tel' | 'url' | 'select' | 'radio' | 'multiple' | 'textarea' | 'availability'
+  kind?: 'text' | 'email' | 'tel' | 'url' | 'select' | 'radio' | 'multiple' | 'textarea' | 'availability'
   options?: readonly string[]
   optional?: boolean
   hint?: string
@@ -11,7 +11,7 @@ export type Question = {
 export type Game = {
   id: string
   name: string
-  shortName: string
+  icon: string
   visible: boolean
   questions: Question[]
 }
@@ -31,40 +31,40 @@ const elo: Question[] = [
 
 // Modalidades ocultas permanecem cadastradas para ativação futura.
 export const games: Game[] = [
-  { id: 'brawl-stars', name: 'Brawl Stars', shortName: 'BS', visible: true, questions: [
+  { id: 'brawl-stars', name: 'Brawl Stars', icon: '/game-icons/brawl-stars.png', visible: true, questions: [
     { id: 'gameId', label: 'Qual seu SupercellID? (nick no jogo)' }, ...ranks(),
     { id: 'class', label: 'Qual classe você joga?', kind: 'select', options: ['Tanque', 'Algozes', 'Suporte', 'Controle', 'Destruidores', 'Tiros Precisos', 'Detonadores'] },
   ] },
-  { id: 'ea-fc', name: 'EA FC', shortName: 'FC', visible: true, questions: [
+  { id: 'ea-fc', name: 'EA FC', icon: '/game-icons/ea-fc.png', visible: true, questions: [
     { id: 'gameId', label: 'Qual seu ID? (nick no jogo)' }, ...ranks(),
   ] },
-  { id: 'free-fire', name: 'Free Fire', shortName: 'FF', visible: true, questions: [
+  { id: 'free-fire', name: 'Free Fire', icon: '/game-icons/free-fire.png', visible: true, questions: [
     { id: 'gameId', label: 'Qual seu ID? (nick no jogo)' }, ...ranks('Battle Royale'), ...ranks('Contra Squad'),
   ] },
-  { id: 'valorant', name: 'VALORANT', shortName: 'VAL', visible: true, questions: [
+  { id: 'valorant', name: 'VALORANT', icon: '/game-icons/valorant.png', visible: true, questions: [
     { id: 'gameId', label: 'Qual seu Riot ID?', hint: 'Informe seu nick no jogo + tag.' }, ...ranks(),
     { id: 'mainRole', label: 'Qual sua função principal?', kind: 'select', options: valorantRoles },
     { id: 'otherRoles', label: 'Em quais outras funções você gosta de jogar?', kind: 'multiple', options: valorantRoles, optional: true },
     { id: 'mainAgent', label: 'Qual seu main agent?' },
     { id: 'otherAgents', label: 'Com quais outros agentes você gosta de jogar?', optional: true },
   ] },
-  { id: 'league-of-legends', name: 'League of Legends', shortName: 'LOL', visible: true, questions: [
+  { id: 'league-of-legends', name: 'League of Legends', icon: '/game-icons/league-of-legends.png', visible: true, questions: [
     { id: 'gameId', label: 'Qual seu nick no jogo?' },
     { id: 'mainLane', label: 'Em qual lane deseja realizar a seletiva?', kind: 'select', options: lanes },
     { id: 'otherLanes', label: 'Em quais outras lanes você estaria disposto a jogar?', kind: 'multiple', options: lanes }, ...elo,
   ] },
-  { id: 'counter-strike-2', name: 'Counter-Strike 2', shortName: 'CS2', visible: true, questions: [
+  { id: 'counter-strike-2', name: 'Counter-Strike 2', icon: '/game-icons/counter-strike-2.png', visible: true, questions: [
     { id: 'steam', label: 'Link do perfil da Steam', kind: 'url' },
     { id: 'gamersClub', label: 'Link do perfil da GamersClub', kind: 'url', optional: true },
     { id: 'faceit', label: 'Link do perfil da Faceit', kind: 'url', optional: true },
     { id: 'mainRole', label: 'Qual sua função no CS?', kind: 'radio', options: ['Rifler', 'Awper'] },
   ] },
-  { id: 'teamfight-tactics', name: 'Teamfight Tactics', shortName: 'TFT', visible: false, questions: ranks() },
-  { id: 'wild-rift', name: 'Wild Rift', shortName: 'WR', visible: false, questions: [
+  { id: 'teamfight-tactics', name: 'Teamfight Tactics', icon: '/game-icons/teamfight-tactics.png', visible: false, questions: ranks() },
+  { id: 'wild-rift', name: 'Wild Rift', icon: '/game-icons/wild-rift.png', visible: false, questions: [
     { id: 'gameId', label: 'Qual seu nick no jogo?' },
     ...lanes.map((lane) => ({ id: `level${lane}`, label: `Qual o nível máximo que você alcançou na lane ${lane}?` })), ...elo,
   ] },
-  { id: 'rocket-league', name: 'Rocket League', shortName: 'RL', visible: false, questions: [
+  { id: 'rocket-league', name: 'Rocket League', icon: '/game-icons/rocket-league.png', visible: false, questions: [
     { id: 'platform', label: 'Em qual plataforma você joga?', kind: 'select', options: ['Steam', 'Epic Games', 'PlayStation', 'Xbox'] },
     { id: 'gameId', label: 'Qual seu nick atual no jogo?' }, ...ranks(),
   ] },

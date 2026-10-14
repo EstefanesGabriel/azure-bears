@@ -6,6 +6,7 @@ import { SiteHeader } from '../components/SiteHeader'
 import { SiteFooter } from '../components/SiteFooter'
 import { HomePage } from '../pages/HomePage'
 import { RecruitmentPage } from '../pages/RecruitmentPage'
+import { AboutPage } from '../pages/AboutPage'
 
 const pages = [...navigation.slice(1), ...secondaryNavigation]
 
@@ -88,7 +89,8 @@ export function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/seletivas" element={<RecruitmentPage />} />
-          {pages.filter((page) => page.path !== '/seletivas').map((page) => (
+          <Route path="/sobre" element={<AboutPage />} />
+          {pages.filter((page) => page.path !== '/seletivas' && page.path !== '/sobre').map((page) => (
             <Route
               key={page.path}
               path={`${page.path}/*`}
