@@ -5,6 +5,7 @@ import { navigation, secondaryNavigation } from '../data/site'
 import { SiteHeader } from '../components/SiteHeader'
 import { SiteFooter } from '../components/SiteFooter'
 import { HomePage } from '../pages/HomePage'
+import { RecruitmentPage } from '../pages/RecruitmentPage'
 
 const pages = [...navigation.slice(1), ...secondaryNavigation]
 
@@ -86,7 +87,8 @@ export function App() {
       <main id="conteudo" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          {pages.map((page) => (
+          <Route path="/seletivas" element={<RecruitmentPage />} />
+          {pages.filter((page) => page.path !== '/seletivas').map((page) => (
             <Route
               key={page.path}
               path={`${page.path}/*`}

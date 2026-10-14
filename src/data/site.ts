@@ -3,14 +3,19 @@ import type { ImageAsset, SocialLink } from '../models/content'
 export const site = {
   name: 'Azure Bears',
   university: 'UTFPR',
+  contactEmail: 'azure@atleticautfpr.com.br',
   description:
     'Somos o Azure Bears, uma organização universitária de e-sports vinculada à Universidade Tecnológica Federal do Paraná. Um lugar para quem quer competir, criar e fazer parte da comunidade gamer.',
-  logo: {
-    src: '/brand/azure-bears-lockup.svg',
-    alt: 'Azure Bears — urso branco e lettering angular',
+  logoUrso: {
+    src: '/brand/logo-urso-branco.png',
+    alt: 'Azure Bears — urso branco',
   } as ImageAsset,
-  symbol: '/brand/azure-bears-symbol-white.svg',
-  wordmark: '/brand/azure-bears-wordmark.svg',
+  logoLetras: {
+    src: '/brand/logo-escrita-azure-bears-vertical-branco.svg',
+    alt: 'Azure Bears — letras',
+  } as ImageAsset,
+  symbol: '/brand/logo-urso-branco.png',
+  wordmark: '/brand/logo-escrita-azure-bears-vertical-branco.svg',
   heroImage: undefined as ImageAsset | undefined,
   heroVideo: undefined as string | undefined,
   socialLinks: [

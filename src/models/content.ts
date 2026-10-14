@@ -32,7 +32,7 @@ export interface Product {
 export interface Partner {
   id: string
   name: string
-  url: string
+  url?: string
   logo?: ImageAsset
 }
 

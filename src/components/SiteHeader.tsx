@@ -51,7 +51,7 @@ export function SiteHeader() {
               </NavLink>
             ))}
           </nav>
-          <Link to="/#comunidade" className="header-cta">
+          <Link to="/seletivas" className="header-cta">
             Faça parte <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
           <button

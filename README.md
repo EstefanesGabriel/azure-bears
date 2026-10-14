@@ -20,7 +20,8 @@ No PowerShell com scripts bloqueados, utilize `npm.cmd install` e `npm.cmd run d
 - Home responsiva com hero, apresentação, notícias, equipes, loja, parceiros, participação e rodapé.
 - Navegação na ordem da referência NRG: Início, Sobre nós, Equipes, Notícias, Loja e Parceiros.
 - Diretoria e Processos seletivos acessíveis no rodapé e no menu mobile.
-- Destinos das próximas páginas mostram um aviso de disponibilidade. Não são implementações dessas páginas.
+- Seletivas em `/seletivas`: escolha entre times competitivos e diretoria (em breve), com formulário competitivo por etapas.
+- Destinos das demais páginas mostram um aviso de disponibilidade. Não são implementações dessas páginas.
 - Sem serviços externos, coleta de dados, Cloudflare, armazenamento remoto, autenticação ou pagamentos.
 
 ## Conteúdo e materiais oficiais
@@ -41,4 +42,21 @@ O lettering isolado foi redesenhado geometricamente com base na marca; não é u
 
 ## Próximas etapas
 
-Implementar Sobre nós, Equipes, Notícias, Loja e Parceiros seguindo a navegação. Diretoria e Seletivas continuam no escopo geral. Integrações, metadados de compartilhamento com imagens oficiais e pré-renderização das páginas serão trabalhados nas etapas correspondentes. Ainda não há configuração de publicação ou domínio.
+### Logo da patrocinadora Station
+
+Coloque o PNG em `public/partners/station.png`, mantendo o nome em letras minúsculas. A Home já está configurada para carregá-lo, sem necessidade de editar componentes. Prefira uma imagem com fundo transparente e uma versão legível sobre fundo escuro. Após adicionar o arquivo, atualize a página do navegador. Até o arquivo estar disponível, será exibido apenas o nome Station, evitando uma imagem quebrada. O cadastro está em `src/data/home.ts`; um link oficial pode ser acrescentado futuramente no campo opcional `url`.
+
+Implementar Sobre nós, Equipes, Notícias, Loja e Parceiros seguindo a navegação. O formulário da diretoria continua pendente. Integrações, metadados de compartilhamento com imagens oficiais e pré-renderização das páginas serão trabalhados nas etapas correspondentes. Ainda não há configuração de publicação ou domínio.
+
+## Formulário de seletivas
+
+O botão **Faça parte** abre `/seletivas`. No competitivo, o fluxo é: jogo → ciência das regras → informações pessoais → informações acadêmicas → função → perguntas do jogo (somente Player) → perguntas finais → revisão. A diretoria aparece como **Em breve**.
+
+- `src/features/recruitment/config.ts`: modalidades, visibilidade, perguntas, campi e alternativas. TFT, Wild Rift e Rocket League estão cadastrados com `visible: false`; alterar para `true` os inclui no seletor com suas perguntas prontas.
+- `src/features/recruitment/form.ts`: validação com Zod por etapa e completa, incluindo os ramos condicionais. A validação completa remove respostas que não se aplicam à modalidade/função atual.
+- `src/features/recruitment/QuestionField.tsx`: campos acessíveis com React Hook Form.
+- `src/pages/RecruitmentPage.tsx` e `src/styles/recruitment.css`: fluxo, revisão e visual responsivo.
+
+As respostas ficam somente na memória da página; não há localStorage, envio de e-mail ou chamadas para um serviço de recebimento. O aviso de prévia aparece desde o início e **Enviar inscrição** permanece desabilitado. A integração de envio será feita em uma etapa futura; não há confirmação fictícia de inscrição.
+
+Execute `npm.cmd test` (Node.js 22.13+ ou 24+) para verificar as validações e condicionais, e `npm.cmd run build` para validar os tipos e gerar a aplicação.

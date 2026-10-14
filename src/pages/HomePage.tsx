@@ -12,6 +12,7 @@ import { home, modalities, news, partners, products } from '../data/home'
 import { site } from '../data/site'
 import { Media } from '../components/Media'
 import { SectionHeading } from '../components/SectionHeading'
+import { PartnerMark } from '../components/PartnerMark'
 
 function Hero() {
   const video = useRef<HTMLVideoElement>(null)
@@ -351,22 +352,10 @@ function PartnersSection() {
         {partners.length ? (
           <div className="partner-grid">
             {partners.map((partner) => (
-              <a
-                href={partner.url}
-                key={partner.id}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {partner.logo ? (
-                  <img
-                    src={partner.logo.src}
-                    alt={partner.name}
-                    loading="lazy"
-                  />
-                ) : (
-                  partner.name
-                )}
-              </a>
+              <PartnerMark
+                key={`${partner.id}-${partner.logo?.src ?? ''}`}
+                partner={partner}
+              />
             ))}
           </div>
         ) : (

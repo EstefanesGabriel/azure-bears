@@ -60,6 +60,10 @@ export function SiteFooter() {
               estarão aqui em breve.
             </p>
           )}
+          <div className="footer-contact">
+            <p className="eyebrow">Contato</p>
+            <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>
+          </div>
           <p className="university-label">
             E-sports universitário <span>UTFPR</span>
           </p>

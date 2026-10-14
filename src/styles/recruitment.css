@@ -1,0 +1,113 @@
+.recruitment-page { padding-block: 76px 100px; }
+.recruit-intro { max-width: 850px; }
+.recruit-intro h1 { font-size: clamp(64px, 8vw, 112px); line-height: .88; letter-spacing: -.025em; margin-block: 24px; }
+.recruit-intro > p:last-child { max-width: 510px; color: var(--color-muted); font-size: 14px; line-height: 1.8; }
+.recruit-preview-notice { display: flex; align-items: baseline; gap: 12px; padding: 18px 20px; margin-block: 34px; border: 1px solid var(--line); color: #c0c4cf; font-size: 12px; line-height: 1.7; }
+.recruit-preview-notice > span { width: 6px; height: 6px; background: var(--color-accent); flex-shrink: 0; }
+.recruit-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.recruit-path { display: flex; flex-direction: column; align-items: flex-start; padding: clamp(26px, 4vw, 56px); border: 1px solid var(--line); position: relative; overflow: hidden; }
+.recruit-path-competitive { background: linear-gradient(125deg, #152448, #10141d 75%); border-top: 3px solid var(--color-accent); }
+.recruit-path-directors { background: #101216; border-top: 3px solid #495264; }
+.recruit-card-top { display: flex; justify-content: space-between; width: 100%; align-items: center; gap: 14px; color: #b8cdff; margin-bottom: 54px; }
+.recruit-path-directors .recruit-card-top { color: var(--color-muted); }
+.recruit-path h2 { font-size: clamp(44px, 5vw, 72px); line-height: .95; }
+.recruit-path > p { max-width: 390px; font-size: 14px; line-height: 1.8; color: #b8bcc8; margin-block: 22px 36px; }
+.recruit-path .button, .recruit-coming-soon { margin-top: auto; }
+.recruit-coming-soon { border: 1px solid #ffffff35; padding: 14px 25px; font-size: 12px; color: #bdc2cc; }
+.recruit-workspace { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
+.recruit-sidebar { position: sticky; top: 112px; padding-block: 24px; }
+.recruit-selected-game { font-family: var(--font-display); font-size: 32px; line-height: 1.1; margin-top: 10px; }
+.recruit-step-count { color: var(--color-muted); font-size: 12px; margin-block: 16px 25px; }
+.recruit-steps { padding: 0; margin: 0; list-style: none; display: grid; gap: 8px; }
+.recruit-steps li { display: flex; align-items: center; gap: 12px; color: #929aaa; font-size: 12px; padding-block: 8px; }
+.recruit-steps li > span { width: 26px; height: 26px; border: 1px solid #ffffff30; display: grid; place-items: center; font-size: 10px; flex-shrink: 0; }
+.recruit-steps li[aria-current='step'] { color: white; }
+.recruit-steps li[aria-current='step'] > span { background: var(--color-accent); color: #08090b; border-color: var(--color-accent); }
+.recruit-steps li.is-complete { color: #b5caff; }
+.recruit-sidebar-note { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 25px; color: var(--color-muted); font-size: 12px; line-height: 1.8; }
+.recruit-form { padding: clamp(24px, 3.5vw, 48px); background: #101217; border: 1px solid var(--line); min-width: 0; }
+.recruit-form-heading { margin-bottom: 36px; }
+.recruit-form-heading h2 { font-size: clamp(36px, 4vw, 54px); line-height: 1.05; margin-top: 10px; scroll-margin-top: 110px; }
+.recruit-form-heading h2:focus { outline: none; }
+.recruit-form-heading > p:last-child:not(.eyebrow) { font-size: 12px; color: var(--color-muted); line-height: 1.8; margin-top: 14px; }
+.recruit-field { display: block; margin: 0 0 28px; padding: 0; border: 0; min-width: 0; }
+.recruit-field > label, .recruit-field > legend { display: block; font-size: 14px; font-weight: 500; line-height: 1.6; padding: 0; margin-bottom: 10px; }
+.recruit-optional { color: #9da6b7; font-weight: 400; font-size: 11px; margin-left: 10px; white-space: nowrap; }
+.recruit-hint { color: #aeb5c4; font-size: 12px; line-height: 1.7; margin-block: 8px 12px; }
+.recruit-field > input, .recruit-field > select, .recruit-field > textarea { width: 100%; min-height: 50px; background: #090b10; color: #f6f6f3; border: 1px solid #ffffff40; padding: 13px 14px; font: inherit; font-size: 16px; border-radius: 0; }
+.recruit-field > textarea { resize: vertical; min-height: 120px; }
+.recruit-field > select { padding-right: 28px; }
+.recruit-field :is(input, select, textarea):focus-visible { outline-offset: 3px; outline-width: 2px; }
+.recruit-field :is(input, select, textarea)[aria-invalid='true'] { border-color: #ff9a9a; }
+.recruit-field input[type='checkbox'], .recruit-field input[type='radio'] { width: 18px; height: 18px; accent-color: #729bff; flex-shrink: 0; margin: 0; cursor: pointer; }
+.recruit-error { color: #ffb1b1; font-size: 12px; margin-block: 8px 12px; line-height: 1.6; }
+.recruit-error-summary { color: #ffd0d0; border-left: 3px solid #ff9a9a; background: #ff9a9a0a; padding: 14px 16px; font-size: 13px; line-height: 1.6; margin-bottom: 26px; }
+.recruit-choices { display: flex; flex-wrap: wrap; gap: 10px; }
+.recruit-choice { border: 1px solid #ffffff30; background: #0c0e13; padding: 15px 17px; display: flex; align-items: center; gap: 12px; font-size: 13px; line-height: 1.6; cursor: pointer; }
+.recruit-choice:has(input:checked) { background: #729bff12; border-color: #729bff; }
+.recruit-choices-multiple { display: grid; }
+.recruit-games { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
+.recruit-game { position: relative; cursor: pointer; border: 1px solid #ffffff30; padding: 22px 20px 18px; min-height: 148px; display: flex; flex-direction: column; align-items: flex-start; background: #0b0e14; gap: 15px; }
+.recruit-game:has(input:checked) { border-color: var(--color-accent); background: #14213c; }
+.recruit-game:has(input:focus-visible) { outline: 2px solid #a5bdff; outline-offset: 4px; }
+.recruit-game:hover { border-color: #a5bdff; }
+.recruit-game > input { position: absolute; right: 16px; top: 16px; opacity: 0; }
+.recruit-game-code { color: #729bff; font-family: var(--font-display); font-size: 50px; line-height: 1; font-weight: 600; }
+.recruit-game-name { font-size: 13px; font-weight: 500; }
+.recruit-game-check { position: absolute; right: 16px; top: 16px; width: 19px; height: 19px; border: 1px solid #ffffff40; display: grid; place-items: center; }
+.recruit-game-check svg { opacity: 0; }
+.recruit-game:has(input:checked) .recruit-game-check { background: var(--color-accent); color: #08090b; border-color: var(--color-accent); }
+.recruit-game:has(input:checked) .recruit-game-check svg { opacity: 1; }
+.recruit-rules { border-left: 2px solid var(--color-accent); padding: 25px; background: #729bff08; }
+.recruit-rules p { font-size: 17px; line-height: 1.9; margin-block: 24px; }
+.recruit-rules > span { color: #aeb5c4; font-size: 12px; line-height: 1.8; display: block; }
+.recruit-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; border-top: 1px solid var(--line); padding-top: 26px; margin-top: 36px; }
+.recruit-back { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; color: #c4cbd7; font-size: 12px; }
+.recruit-back:hover { color: white; }
+.recruit-actions button:disabled { opacity: .4; background: #f4f4f0; border-color: #f4f4f0; }
+.availability-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 18px; }
+.availability-table th { font-weight: 400; text-align: left; padding: 12px 10px; }
+.availability-table thead th { color: #aeb5c4; }
+.availability-table th:not(:first-child), .availability-table td { width: 23%; text-align: center; }
+.availability-table tbody tr { border-top: 1px solid var(--line); }
+.availability-check { display: grid; place-items: center; min-height: 46px; cursor: pointer; }
+.availability-table tbody tr:nth-child(odd) { background: #ffffff03; }
+.recruit-review-notice { padding: 20px; background: #729bff0c; border: 1px solid #729bff55; font-size: 13px; line-height: 1.8; margin-bottom: 32px; }
+.recruit-review-notice > p { color: #b9c3d7; margin-top: 8px; }
+.recruit-review-section { padding-block: 24px; border-top: 1px solid var(--line); }
+.recruit-review-title { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-bottom: 18px; }
+.recruit-review-title h3 { font-size: 30px; line-height: 1.1; margin-right: auto; }
+.recruit-review-title button { color: #b5caff; min-height: 44px; }
+.recruit-review-section dl { margin: 0; display: grid; gap: 20px; font-size: 13px; line-height: 1.7; }
+.recruit-review-section dt { color: #a5aebe; font-size: 12px; }
+.recruit-review-section dd { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.recruit-review-section ul { margin: 0; padding-left: 18px; list-style: disc; }
+@media (max-width: 1023px) {
+  .recruit-workspace { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .recruit-sidebar { position: static; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+  .recruit-sidebar > .eyebrow, .recruit-sidebar-note, .recruit-steps { display: none; }
+  .recruit-selected-game { margin: 0; }
+  .recruit-step-count { margin: 0 0 0 auto; }
+}
+@media (max-width: 700px) {
+  .recruitment-page { padding-block: 50px 65px; }
+  .recruit-paths { grid-template-columns: 1fr; gap: 18px; }
+  .recruit-card-top { margin-bottom: 36px; }
+  .recruit-path h2 { font-size: 52px; }
+  .recruit-preview-notice { padding: 14px; font-size: 11px; margin-block: 28px; }
+  .recruit-form { padding: 24px 18px; }
+  .recruit-games { gap: 10px; }
+  .recruit-game { padding: 20px 12px 16px; min-height: 142px; }
+  .recruit-game-name { font-size: 12px; }
+  .recruit-game-code { font-size: 44px; }
+  .recruit-rules { padding: 20px 16px; }
+  .recruit-rules p { font-size: 15px; }
+  .recruit-actions { gap: 12px; }
+  .recruit-actions .button { padding-inline: 16px; gap: 12px; }
+  .recruit-choice { padding: 13px; }
+  .recruit-field > label, .recruit-field > legend { font-size: 13px; }
+  .availability-table th { padding-inline: 4px; }
+}
+@media (max-width: 380px) {
+  .recruit-actions { flex-direction: column-reverse; align-items: stretch; }
+}

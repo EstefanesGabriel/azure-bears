@@ -232,9 +232,17 @@ h2 {
 .brand-dot {
   color: #729bff;
 }
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: fit-content;
+}
+
 .brand-image {
-  width: 110px;
+  width: auto;
   height: 58px;
+  max-width: none;
   flex-shrink: 0;
   object-fit: contain;
 }
@@ -968,6 +976,11 @@ a:hover .content-media img {
   max-height: 75px;
   object-fit: contain;
 }
+.partner-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  text-transform: uppercase;
+}
 
 .site-footer {
   padding-top: 65px;
@@ -977,6 +990,17 @@ a:hover .content-media img {
   grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
   gap: 40px;
   padding-bottom: 60px;
+}
+.footer-grid > div {
+  min-width: 0;
+}
+.footer-grid .brand-container {
+  width: 340px;
+  max-width: 100%;
+}
+.footer-grid .brand-image-large {
+  width: 50%;
+  min-width: 0;
 }
 .brand-large {
   font-size: 49px;
@@ -1016,6 +1040,22 @@ a:hover .content-media img {
   color: #9498a4;
   font-size: 11px;
   line-height: 1.8;
+}
+.footer-contact {
+  margin-top: 24px;
+}
+.footer-contact .eyebrow {
+  margin-bottom: 8px;
+  font-size: 9px;
+}
+.footer-contact a {
+  color: #9498a4;
+  font-size: 11px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.footer-contact a:hover {
+  color: #e1e9ff;
 }
 .university-label {
   margin-top: 22px;

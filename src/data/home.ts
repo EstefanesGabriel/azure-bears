@@ -3,7 +3,16 @@ import type { Modality, NewsItem, Partner, Product } from '../models/content'
 export const news: NewsItem[] = []
 export const modalities: Modality[] = []
 export const products: Product[] = []
-export const partners: Partner[] = []
+export const partners: Partner[] = [
+  {
+    id: 'station',
+    name: 'Station',
+    logo: {
+      src: '/partners/station.png',
+      alt: 'Station — patrocinadora do Azure Bears',
+    },
+  },
+]
 
 export const home = {
   hero: {
