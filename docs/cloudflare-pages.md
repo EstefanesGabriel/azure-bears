@@ -2,6 +2,50 @@
 
 O site já está preparado para Cloudflare Pages e Pages Functions. Primeiro publique o site com o recebimento dos formulários desligado. Depois use a URL recebida para configurar Turnstile e Google Sheets.
 
+## Alternativa quando o painel não mostra Pages: publicar pelo PowerShell
+
+É possível criar o projeto Pages e publicar diretamente do computador com Wrangler. Esse caminho mantém a API dos formulários e dispensa localizar o botão Pages no painel.
+
+**Escolha do fluxo:** este método cria um projeto Direct Upload. As atualizações serão publicadas pelo terminal; o push para o GitHub sozinho não dispara deploy. A integração Git nativa exigiria outro projeto Pages; também é possível automatizar o upload por CI posteriormente.
+
+Abra o PowerShell e execute cada etapa somente depois que a anterior terminar com sucesso:
+
+```powershell
+Set-Location C:\Gabriel\azure-bears
+npm.cmd install
+npx.cmd wrangler login
+```
+
+O login abre o navegador. Entre na conta Cloudflare correta e autorize o Wrangler. Não é necessário copiar tokens para o código ou para o chat.
+
+Depois, no mesmo terminal, crie o projeto Pages:
+
+```powershell
+npx.cmd wrangler pages project create azure-bears --production-branch main
+```
+
+Se houver escolha de conta, selecione a mesma usada no painel. Se informar que o projeto Pages já existe na conta, confira com `npx.cmd wrangler pages project list` antes de seguir. A tentativa anterior de Worker é um recurso separado.
+
+Gere a versão atual do site:
+
+```powershell
+npm.cmd run build
+```
+
+Se o build concluir com sucesso, publique:
+
+```powershell
+npx.cmd wrangler pages deploy dist --project-name azure-bears --branch main
+```
+
+Execute na raiz do repositório, onde está a pasta `functions`, para incluir a API. O comando envia os arquivos locais compilados; não exige commit/push prévio. Mantenha as inscrições desativadas até concluir a configuração dos serviços.
+
+Após o sucesso, consulte a URL de produção no projeto Pages ou em `npx.cmd wrangler pages project list`. Não use o endereço temporário de uma implantação no lugar do endereço estável de produção ao configurar `SITE_ORIGIN` e Turnstile.
+
+Para atualizar futuramente, repita o build e, depois de concluído, o comando `wrangler pages deploy` acima.
+
+Referência: [publicação direta com Wrangler e suporte a Functions](https://developers.cloudflare.com/pages/get-started/direct-upload/).
+
 ## 1. Enviar a versão atual para o GitHub
 
 O repositório configurado neste projeto é `EstefanesGabriel/azure-bears`, e a branch local é `main`.
@@ -60,5 +104,13 @@ Continue no [guia Google Sheets](google-sheets.md) para criar o widget, configur
 Com a integração Git configurada, novos pushes para a branch de produção disparam novas publicações. Para conferir uma publicação, veja o status, o commit e a URL em Workers & Pages → seu projeto.
 
 Se a publicação falhar, abra o log do deploy e procure o primeiro erro. Confira se os arquivos atuais chegaram ao GitHub, se o comando é `npm run build`, se a saída é `dist` e se `NODE_VERSION=24` foi aplicada.
+
+### Build passa, mas `npx wrangler deploy` falha
+
+Se o log mostrar `Success: Build command completed`, seguido de `Executing user deploy command: npx wrangler deploy` e `Missing entry-point to Worker script or to assets directory`, o site foi compilado, mas a publicação está usando o fluxo de Workers. Este repositório está configurado para Pages, com `pages_build_output_dir` e a pasta `functions`.
+
+Volte a **Workers & Pages → Create application** e escolha explicitamente **Pages → Connect to Git** (ou o link **Get started** associado a Pages). Crie o projeto Pages usando o mesmo repositório e os valores da seção 3. No fluxo Pages conectado ao Git, você informa o comando de build e a pasta de saída; não precisa preencher um comando `wrangler deploy`.
+
+Não é necessário excluir a tentativa anterior para começar a configuração Pages. Não adicione um `main` fictício nem somente `assets.directory` ao `wrangler.jsonc` para contornar essa mensagem: isso não publica a API dos formulários como Pages Functions. Os avisos de scripts de instalação do npm não são a causa dessa falha quando o build já terminou com sucesso.
 
 Referências oficiais: [publicação pelo Git](https://developers.cloudflare.com/pages/get-started/git-integration/) e [publicação das Pages Functions](https://developers.cloudflare.com/pages/functions/get-started/).
