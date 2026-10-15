@@ -21,6 +21,7 @@ Para colocar o site no ar pela primeira vez, siga [Publicar no Cloudflare Pages]
 
 - Home responsiva com hero, apresentação, notícias, equipes, loja, parceiros, participação e rodapé.
 - Sobre Nós em `/sobre`, com os textos oficiais fornecidos e espaços reservados às imagens.
+- Equipes em `/equipes`, com nove modalidades, lines, perfis de jogadores e espaços reservados às fotos.
 - Navegação na ordem da referência NRG: Início, Sobre nós, Equipes, Notícias, Loja e Parceiros.
 - Diretoria e Processos seletivos acessíveis no rodapé e no menu mobile.
 - Seletivas em `/seletivas`: escolha entre times competitivos e diretoria, com formulários por etapas e revisão.
@@ -49,7 +50,7 @@ O lettering isolado foi redesenhado geometricamente com base na marca; não é u
 
 Coloque o PNG em `public/partners/station.png`, mantendo o nome em letras minúsculas. A Home já está configurada para carregá-lo, sem necessidade de editar componentes. Prefira uma imagem com fundo transparente e uma versão legível sobre fundo escuro. Após adicionar o arquivo, atualize a página do navegador. Até o arquivo estar disponível, será exibido apenas o nome Station, evitando uma imagem quebrada. O cadastro está em `src/data/home.ts`; um link oficial pode ser acrescentado futuramente no campo opcional `url`.
 
-Implementar Equipes, Notícias, Loja e Parceiros seguindo a navegação. Integrações, metadados de compartilhamento com imagens oficiais e pré-renderização das páginas serão trabalhados nas etapas correspondentes. Ainda não há configuração de publicação ou domínio.
+Implementar Notícias, Loja e Parceiros seguindo a navegação. Metadados de compartilhamento com imagens oficiais e pré-renderização das páginas serão trabalhados nas etapas correspondentes. A publicação está configurada para Cloudflare Pages; consulte o guia de deploy.
 
 ## Sobre Nós
 
@@ -68,6 +69,12 @@ Coloque as imagens em `public/images/about/`, preservando os nomes abaixo. Os `s
 | Comunidade | `imagem16.png` grande acima; `imagem17.png` e `imagem18.png` menores abaixo |
 
 Ao escolher as fotos, ajuste os textos alternativos (`alt`) em `src/data/about.ts` para descrever os materiais reais. Os marcos da história preservam a imagem inteira; as demais imagens preenchem a área reservada com `object-fit: cover`.
+
+## Equipes
+
+A página `/equipes` reúne as nove modalidades e permite navegar por modalidade → line → perfil do jogador. O cadastro está em `src/data/teams.ts`; `visible: false` retira uma modalidade, line ou jogador sem apagá-lo. Essa visibilidade não altera as seletivas.
+
+As lines e os jogadores começam com identificadores genéricos. Fotos entram em `public/images/teams/<modalidade>/<line>/`: `line.png` para o grupo e `jogador-01.png`, `jogador-02.png` etc. para os retratos. As pastas já estão preparadas. Consulte [docs/equipes.md](docs/equipes.md) para substituir os cadastros e adicionar elencos reais.
 
 ## Movimento e interações
 

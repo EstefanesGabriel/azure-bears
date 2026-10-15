@@ -7,6 +7,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { HomePage } from '../pages/HomePage'
 import { RecruitmentPage } from '../pages/RecruitmentPage'
 import { AboutPage } from '../pages/AboutPage'
+import { TeamsPage } from '../pages/TeamsPage'
 import { MotionEffects } from '../components/MotionEffects'
 
 const pages = [...navigation.slice(1), ...secondaryNavigation]
@@ -92,7 +93,10 @@ export function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/seletivas" element={<RecruitmentPage />} />
           <Route path="/sobre" element={<AboutPage />} />
-          {pages.filter((page) => page.path !== '/seletivas' && page.path !== '/sobre').map((page) => (
+          <Route path="/equipes" element={<TeamsPage />} />
+          <Route path="/equipes/:gameId" element={<TeamsPage />} />
+          <Route path="/equipes/:gameId/:lineId" element={<TeamsPage />} />
+          {pages.filter((page) => !['/seletivas', '/sobre', '/equipes'].includes(page.path)).map((page) => (
             <Route
               key={page.path}
               path={`${page.path}/*`}

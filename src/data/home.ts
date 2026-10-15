@@ -1,7 +1,8 @@
 import type { Modality, NewsItem, Partner, Product } from '../models/content'
+import { visibleModalities } from './teams.ts'
 
 export const news: NewsItem[] = []
-export const modalities: Modality[] = []
+export const modalities: Modality[] = visibleModalities().map((game) => ({ id: game.id, slug: game.id, name: game.name }))
 export const products: Product[] = []
 export const partners: Partner[] = [
   {
