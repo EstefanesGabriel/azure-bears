@@ -162,6 +162,21 @@ Verificações manuais na implantação configurada:
 
 Os testes automatizados executam a validação e o código real do Apps Script com serviços Google simulados. Não comprovam permissões da sua conta, implantação `/exec`, cotas ou integração real do Turnstile. Esses itens exigem o teste acima.
 
+### O formulário informa que o envio está indisponível
+
+Abra `/api/forms` no mesmo endereço de produção do site. Essa consulta não envia respostas e não retorna segredos.
+
+- `CONFIGURATION_ERROR`: a lista `issues` identifica as configurações que bloqueiam o envio, sem mostrar seus valores.
+- `APPS_SCRIPT_URL_INVALID`: em **Google Apps Script → Implantar → Gerenciar implantações**, copie a URL do **aplicativo da Web**. São aceitos os formatos `https://script.google.com/macros/s/ID_DA_IMPLANTACAO/exec` e, para Google Workspace, `https://script.google.com/a/macros/DOMINIO/s/ID_DA_IMPLANTACAO/exec`. Cadastre somente essa URL em `APPS_SCRIPT_URL`, sem aspas ou espaços. O endereço da planilha, a URL do editor e a implantação de teste `/dev` não servem. O formato Workspace também precisa permitir acesso sem login; o formato da URL não garante essa permissão.
+- `SUBMISSIONS_DISABLED`: configure `SUBMISSIONS_ENABLED` com o texto `true` em Production.
+- `SITE_ORIGIN_INVALID`: use somente a origem de produção, com `https://` e sem caminho ou barra final.
+- `TURNSTILE_SITE_KEY_MISSING` ou `TURNSTILE_SECRET_KEY_MISSING`: falta a respectiva chave do widget.
+- `APPS_SCRIPT_SECRET_TOO_SHORT`: cadastre o mesmo segredo de pelo menos 32 caracteres no Pages e nas propriedades do Apps Script.
+- `ORIGIN_NOT_ALLOWED`: abra o endereço de produção correspondente a `SITE_ORIGIN`, em vez do link temporário de uma implantação.
+- `ok: true` com o formulário desativado em `enabled`: confira `src/data/submissions.ts` e publique a versão atual.
+
+Depois de corrigir configurações no Pages, faça novo deploy e use **Verificar novamente** na revisão para preservar as respostas já preenchidas. Um diagnóstico `ok: true` confirma a configuração inicial; a gravação no Google só é comprovada após um envio e a presença da resposta na aba correta.
+
 ## Loja: serviço preparado, página ainda pendente
 
 A loja ainda não tem formulário no site. A API já aceita `kind: 'store'`, valida o catálogo e grava no arquivo da loja. Não foi criada uma loja com produtos fictícios.

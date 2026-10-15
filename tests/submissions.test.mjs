@@ -15,11 +15,47 @@ const env = { SUBMISSIONS_ENABLED: 'true', SITE_ORIGIN: 'https://azure.example',
 const request = (body, options = {}) => new Request('https://azure.example/api/forms', {
   method: 'POST', headers: { origin: env.SITE_ORIGIN, 'content-type': 'application/json' }, body: JSON.stringify(body), ...options,
 })
+
+test('diagnóstico público identifica configuração inválida sem expor credenciais', async () => {
+  const get = new Request('https://azure.example/api/forms')
+  const invalid = { ...env, SUBMISSIONS_ENABLED: 'false', SITE_ORIGIN: 'https://azure.example/', APPS_SCRIPT_URL: 'https://script.google.com/macros/s/test/dev', APPS_SCRIPT_SECRET: 'short-private-value', TURNSTILE_SITE_KEY: '', TURNSTILE_SECRET_KEY: ' ' }
+  const response = await handleSubmissions(get, invalid)
+  assert.equal(response.status, 503)
+  assert.deepEqual(await response.json(), { ok: false, code: 'CONFIGURATION_ERROR', issues: [
+    'SUBMISSIONS_DISABLED', 'SITE_ORIGIN_INVALID', 'TURNSTILE_SITE_KEY_MISSING', 'TURNSTILE_SECRET_KEY_MISSING', 'APPS_SCRIPT_SECRET_TOO_SHORT', 'APPS_SCRIPT_URL_INVALID',
+  ] })
+  const valid = await handleSubmissions(get, env)
+  assert.equal(valid.status, 200)
+  assert.equal((await valid.json()).ok, true)
+  const mismatch = await handleSubmissions(new Request('https://preview.example/api/forms'), env)
+  assert.equal(mismatch.status, 403)
+  assert.equal((await mismatch.json()).code, 'ORIGIN_NOT_ALLOWED')
+})
 function application() {
   return { kind: 'directorate', submissionId: randomUUID(), edition: 'test-edition', processId: 'test-directorate', privacyAcknowledged: true, privacyVersion: submissionSettings.privacyVersion, turnstileToken: 'test-token', data: { answers: {
     fullName: 'Teste Azure', nickname: '=1+1', email: 'test@example.com', phone: '+55 41 99999-9999', motivation: 'Teste de integração', area: 'Eventos', areaDescription: 'Organizar eventos.',
   } } }
 }
+
+test('aceita URLs de produção comuns e Workspace, mantendo o destino restrito ao Apps Script', async () => {
+  for (const url of ['https://script.google.com/macros/s/test-ID_123/exec', 'https://script.google.com/a/macros/alunos.utfpr.edu.br/s/test-ID_123/exec']) {
+    const response = await handleSubmissions(new Request('https://azure.example/api/forms'), { ...env, APPS_SCRIPT_URL: url })
+    assert.equal(response.status, 200, url)
+  }
+  for (const url of [
+    'https://script.google.com/a/macros/alunos.utfpr.edu.br/s/test/dev',
+    'https://script.google.com.evil.example/macros/s/test/exec',
+    'https://script.google.com@evil.example/macros/s/test/exec',
+    'https://script.google.com/a/macros/alunos.utfpr.edu.br/s/test/exec?redirect=elsewhere',
+    'https://script.google.com/a/macros/alunos.utfpr.edu.br/s/test/edit',
+    'https://docs.google.com/spreadsheets/d/test/edit',
+    'http://script.google.com/macros/s/test/exec',
+  ]) {
+    const response = await handleSubmissions(new Request('https://azure.example/api/forms'), { ...env, APPS_SCRIPT_URL: url })
+    assert.equal(response.status, 503, url)
+    assert.deepEqual((await response.json()).issues, ['APPS_SCRIPT_URL_INVALID'])
+  }
+})
 function competitiveApplication(game = 'valorant') {
   const data = { ...emptyValues(), game, role: 'Coach', acknowledged: true }
   for (const step of activeSteps(data.role)) for (const q of questionsFor(step, data)) {
@@ -113,6 +149,17 @@ test('integração valida, assina e acrescenta respostas sem duplicar tentativas
     body.submissionId = randomUUID()
     assert.equal((await handleSubmissions(request(body), env, google.sendFor(body))).status, 200)
     assert.equal(rows.length, 3)
+  })
+
+  await t.test('envio usa a URL Workspace configurada e confirma o recibo do Google', async () => {
+    const google = fakeGoogle()
+    const body = application()
+    const workspaceEnv = { ...env, APPS_SCRIPT_URL: 'https://script.google.com/a/macros/alunos.utfpr.edu.br/s/test/exec' }
+    const response = await handleSubmissions(request(body), workspaceEnv, google.sendFor(body))
+    assert.equal(response.status, 200)
+    assert.equal((await response.json()).submissionId, body.submissionId)
+    assert.equal(google.calls.at(-1), workspaceEnv.APPS_SCRIPT_URL)
+    assert.equal(google.appends.length, 1)
   })
 
   await t.test('competitivo descarta campos de Player para Coach e grava na aba correta', async () => {

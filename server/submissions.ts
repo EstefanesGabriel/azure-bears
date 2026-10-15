@@ -14,10 +14,20 @@ const json = (body: unknown, status = 200) => Response.json(body, {
   status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
 })
 const fail = (code: string, status: number) => json({ ok: false, code }, status)
-function ready(env: SubmissionEnv) {
-  return env.SUBMISSIONS_ENABLED === 'true' && !!env.SITE_ORIGIN && !!env.TURNSTILE_SITE_KEY &&
-    !!env.TURNSTILE_SECRET_KEY && (env.APPS_SCRIPT_SECRET?.length ?? 0) >= 32 &&
-    /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(env.APPS_SCRIPT_URL ?? '')
+function configurationIssues(env: SubmissionEnv) {
+  // Somente identificadores fixos: nunca incluir valores ou partes de credenciais.
+  const issues: string[] = []
+  if (env.SUBMISSIONS_ENABLED !== 'true') issues.push('SUBMISSIONS_DISABLED')
+  try {
+    const origin = new URL(env.SITE_ORIGIN ?? '')
+    if (!['https:', 'http:'].includes(origin.protocol) || origin.origin !== env.SITE_ORIGIN) issues.push('SITE_ORIGIN_INVALID')
+  } catch { issues.push('SITE_ORIGIN_INVALID') }
+  if (!env.TURNSTILE_SITE_KEY?.trim()) issues.push('TURNSTILE_SITE_KEY_MISSING')
+  if (!env.TURNSTILE_SECRET_KEY?.trim()) issues.push('TURNSTILE_SECRET_KEY_MISSING')
+  if ((env.APPS_SCRIPT_SECRET?.length ?? 0) < 32) issues.push('APPS_SCRIPT_SECRET_TOO_SHORT')
+  // Contas Workspace podem usar /a/macros/DOMINIO/s/ID/exec.
+  if (!/^https:\/\/script\.google\.com\/(?:macros|a\/macros\/[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?)\/s\/[\w-]+\/exec$/.test(env.APPS_SCRIPT_URL ?? '')) issues.push('APPS_SCRIPT_URL_INVALID')
+  return issues
 }
 function isOpen(kind: SubmissionKind) {
   const config = submissionSettings[kind]
@@ -53,7 +63,10 @@ export async function signPayload(payload: string, timestamp: number, secret: st
 
 export async function handleSubmissions(request: Request, env: SubmissionEnv, send: typeof fetch = fetch): Promise<Response> {
   if (!['GET', 'POST'].includes(request.method)) return fail('METHOD_NOT_ALLOWED', 405)
-  if (!ready(env)) return fail('UNAVAILABLE', 503)
+  const issues = configurationIssues(env)
+  if (issues.length) return request.method === 'GET'
+    ? json({ ok: false, code: 'CONFIGURATION_ERROR', issues }, 503)
+    : fail('UNAVAILABLE', 503)
   const url = new URL(request.url)
   if (url.origin !== env.SITE_ORIGIN) return fail('ORIGIN_NOT_ALLOWED', 403)
   if (request.method === 'GET') return json({
