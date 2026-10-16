@@ -10,6 +10,12 @@ const columns = {
     { id: 'productId', label: 'Código do produto' }, { id: 'productName', label: 'Produto' },
     { id: 'variant', label: 'Variação' }, { id: 'size', label: 'Tamanho' }, { id: 'quantity', label: 'Quantidade' },
     { id: 'fullName', label: 'Nome' }, { id: 'email', label: 'E-mail' }, { id: 'phone', label: 'Celular com DDD' }, { id: 'notes', label: 'Observações' },
+    { id: 'unitPriceCents', label: 'Preço unitário (centavos)' }, { id: 'totalPriceCents', label: 'Total (centavos)' },
+    { id: 'pixRecipient', label: 'Titular Pix informado no pedido' }, { id: 'pixKey', label: 'Chave Pix informada no pedido' },
+    { id: 'fulfillment', label: 'Condições de retirada/entrega' },
+    { id: 'receiptUrl', label: 'Link privado do comprovante' }, { id: 'receiptFileId', label: 'ID do arquivo no Drive' },
+    { id: 'receiptName', label: 'Nome original do comprovante' }, { id: 'receiptMimeType', label: 'Tipo do comprovante' },
+    { id: 'receiptSha256', label: 'SHA-256 do comprovante' },
   ]),
 }
 mkdirSync('integrations/google-apps-script', { recursive: true })

@@ -48,7 +48,7 @@ O lettering isolado foi redesenhado geometricamente com base na marca; não é u
 
 ### Logo da patrocinadora Station
 
-Coloque o PNG em `public/partners/station.png`, mantendo o nome em letras minúsculas. A Home já está configurada para carregá-lo, sem necessidade de editar componentes. Prefira uma imagem com fundo transparente e uma versão legível sobre fundo escuro. Após adicionar o arquivo, atualize a página do navegador. Até o arquivo estar disponível, será exibido apenas o nome Station, evitando uma imagem quebrada. O cadastro está em `src/data/home.ts`; um link oficial pode ser acrescentado futuramente no campo opcional `url`.
+Coloque o PNG em `public/partners/station.png`, mantendo o nome em letras minúsculas. A Home já está configurada para carregá-lo, sem necessidade de editar componentes. Prefira uma imagem com fundo transparente e uma versão legível sobre fundo escuro. Após adicionar o arquivo, atualize a página do navegador. Até o arquivo estar disponível, será exibido apenas o nome Station, evitando uma imagem quebrada. O cadastro compartilhado entre a Home e a página de Parceiros está em `src/data/partners.ts`; um link oficial pode ser acrescentado no campo opcional `url`. Veja [como editar, adicionar ou remover parceiros](docs/parceiros.md).
 
 Implementar Notícias, Loja e Parceiros seguindo a navegação. Metadados de compartilhamento com imagens oficiais e pré-renderização das páginas serão trabalhados nas etapas correspondentes. A publicação está configurada para Cloudflare Pages; consulte o guia de deploy.
 

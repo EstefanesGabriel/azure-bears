@@ -216,6 +216,46 @@ const SHEET_COLUMNS = {
     {
       "id": "notes",
       "label": "notes | Observações"
+    },
+    {
+      "id": "unitPriceCents",
+      "label": "unitPriceCents | Preço unitário (centavos)"
+    },
+    {
+      "id": "totalPriceCents",
+      "label": "totalPriceCents | Total (centavos)"
+    },
+    {
+      "id": "pixRecipient",
+      "label": "pixRecipient | Titular Pix informado no pedido"
+    },
+    {
+      "id": "pixKey",
+      "label": "pixKey | Chave Pix informada no pedido"
+    },
+    {
+      "id": "fulfillment",
+      "label": "fulfillment | Condições de retirada/entrega"
+    },
+    {
+      "id": "receiptUrl",
+      "label": "receiptUrl | Link privado do comprovante"
+    },
+    {
+      "id": "receiptFileId",
+      "label": "receiptFileId | ID do arquivo no Drive"
+    },
+    {
+      "id": "receiptName",
+      "label": "receiptName | Nome original do comprovante"
+    },
+    {
+      "id": "receiptMimeType",
+      "label": "receiptMimeType | Tipo do comprovante"
+    },
+    {
+      "id": "receiptSha256",
+      "label": "receiptSha256 | SHA-256 do comprovante"
     }
   ]
 };

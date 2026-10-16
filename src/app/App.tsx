@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+// import { lazy, Suspense } from 'react'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import { navigation, secondaryNavigation } from '../data/site'
@@ -8,9 +9,18 @@ import { HomePage } from '../pages/HomePage'
 import { RecruitmentPage } from '../pages/RecruitmentPage'
 import { AboutPage } from '../pages/AboutPage'
 import { TeamsPage } from '../pages/TeamsPage'
+import { StorePage } from '../pages/StorePage'
+import { PartnersPage } from '../pages/PartnersPage'
+// import { visibleNews } from '../data/news'
 import { MotionEffects } from '../components/MotionEffects'
 
 const pages = [...navigation.slice(1), ...secondaryNavigation]
+// Notícias desativadas temporariamente: preserve estes componentes para reativar as rotas.
+// const NewsPage = lazy(() => import('../pages/NewsPage').then((module) => ({ default: module.NewsPage })))
+
+// function NewsRoute() {
+//   return <Suspense fallback={<div className="page-container section-space" role="status">Carregando notícias…</div>}><NewsPage /></Suspense>
+// }
 
 function PendingPage({ title }: { title: string }) {
   return (
@@ -62,7 +72,11 @@ export function App() {
     const page = pages.find(
       (item) => pathname === item.path || pathname.startsWith(`${item.path}/`),
     )
+    // const articleSlug = pathname.startsWith('/noticias/') ? pathname.split('/')[2] : undefined
     document.title =
+      // articleSlug
+      //   ? `${visibleNews().find((item) => item.slug === articleSlug)?.title ?? 'Notícia não encontrada'} — Azure Bears`
+      //   :
       pathname === '/'
         ? 'Azure Bears — O jogo é nosso'
         : `${page?.label ?? 'Página não encontrada'} — Azure Bears`
@@ -96,7 +110,12 @@ export function App() {
           <Route path="/equipes" element={<TeamsPage />} />
           <Route path="/equipes/:gameId" element={<TeamsPage />} />
           <Route path="/equipes/:gameId/:lineId" element={<TeamsPage />} />
-          {pages.filter((page) => !['/seletivas', '/sobre', '/equipes'].includes(page.path)).map((page) => (
+          <Route path="/loja" element={<StorePage />} />
+          <Route path="/loja/:slug" element={<StorePage />} />
+          <Route path="/parceiros" element={<PartnersPage />} />
+          {/* <Route path="/noticias" element={<NewsRoute />} />
+          <Route path="/noticias/:slug" element={<NewsRoute />} /> */}
+          {pages.filter((page) => !['/seletivas', '/sobre', '/equipes', '/loja', '/parceiros', '/noticias'].includes(page.path)).map((page) => (
             <Route
               key={page.path}
               path={`${page.path}/*`}

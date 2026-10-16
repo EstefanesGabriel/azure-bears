@@ -72,6 +72,18 @@ Fotos de line usam uma área horizontal; retratos usam uma área vertical. Prefi
 
 Enquanto o arquivo não existe, o espaço mostra a marca da Azure e “Foto em breve”, sem imagens inventadas ou ícone de arquivo quebrado. Os ícones dos jogos continuam em `public/game-icons/`.
 
+## Fundos das equipes na Home e na página de Equipes
+
+Adicione as imagens nestes caminhos, mantendo o nome `home.png`:
+
+- `public/images/teams/valorant/home.png`
+- `public/images/teams/league-of-legends/home.png`
+- `public/images/teams/counter-strike-2/home.png`
+
+Use preferencialmente imagens verticais na proporção 3:4 (por exemplo, 900 × 1200 px), com o assunto principal no centro. Elas preenchem o fundo com recorte central, opacidade de 55% e um degradê escuro sobreposto para manter o nome legível. Não há imagens inventadas: até adicionar o arquivo, permanece o fundo gráfico do site.
+
+Para qualquer modalidade reativada ou nova, o padrão é `public/images/teams/<id-da-modalidade>/home.png`, centralizado na função `teamBackground` em `src/data/teams.ts`. A Home e os cards de `/equipes` usam exatamente o mesmo arquivo, sem duplicar imagens. Esses fundos são independentes das fotos de lines e jogadores. Para trocar uma imagem nas duas telas, substitua o PNG e publique novamente.
+
 ## Navegação e movimentos
 
 - `/equipes`: modalidades, busca por nome/categoria/apelido e links para as lines.

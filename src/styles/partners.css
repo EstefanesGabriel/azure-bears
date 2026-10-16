@@ -1,0 +1,60 @@
+.allies-page { overflow: clip; }
+.allies-hero { display: grid; grid-template-columns: 1.4fr 1fr; align-items: end; gap: 72px; padding-block: 88px 76px; }
+.allies-hero .eyebrow { margin-bottom: 28px; }
+.allies-hero h1 { font-size: clamp(64px, 8.6vw, 126px); line-height: .88; letter-spacing: -.025em; }
+.allies-hero h1 span { color: var(--color-accent); }
+.allies-hero-side { max-width: 370px; padding-bottom: 8px; }
+.allies-hero-side > p { color: #b0b7c3; line-height: 1.85; font-size: 15px; margin-block: 30px 24px; }
+.allies-emblem { display: flex; align-items: center; gap: 20px; color: var(--color-accent); }
+.allies-emblem svg { width: 100px; height: 100px; stroke-width: 1.1; }
+.allies-emblem svg:first-child { animation: allies-turn 32s linear infinite; }
+.allies-emblem svg:last-child { width: 75px; height: 75px; }
+.allies-band { display: flex; justify-content: space-evenly; align-items: center; gap: 30px; padding: 18px 24px 12px; background: #b7ceff; color: #09182f; font: 700 clamp(19px, 3vw, 32px)/1 var(--font-display); letter-spacing: .08em; }
+.allies-band svg { flex-shrink: 0; width: 20px; }
+.allies-list { padding-block: 80px; scroll-margin-top: 100px; }
+.allies-list-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding-bottom: 36px; }
+.allies-list-heading .eyebrow { margin-bottom: 12px; }
+.allies-list-heading > span { color: #9ca8ba; font-size: 10px; letter-spacing: .13em; padding-bottom: 8px; }
+.allies-partner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 90px); align-items: center; padding-block: 48px; border-top: 1px solid var(--line); }
+.allies-logo { min-width: 0; padding: 35px 10px; }
+.allies-logo > div, .allies-logo > a { display: grid; place-items: center; min-height: 200px; }
+.allies-logo img { width: 100%; max-width: 380px; max-height: 260px; object-fit: contain; transition: scale .45s ease; }
+.allies-logo:hover img { scale: 1.035; }
+.allies-copy { min-width: 0; }
+.allies-copy > .eyebrow { color: #a6b4c8; margin-bottom: 10px; }
+.allies-copy h3 { font-size: clamp(52px, 6vw, 78px); line-height: 1; text-transform: uppercase; overflow-wrap: anywhere; }
+.allies-copy h4 { font: 600 clamp(23px, 2.4vw, 30px)/1.2 var(--font-display); margin-block: 24px 15px; }
+.allies-description { font-size: 14px; line-height: 1.85; color: #adb6c4; margin-top: 16px; overflow-wrap: anywhere; }
+.allies-copy > .text-link { margin-top: 25px; }
+.allies-empty { padding: 40px 0; border-top: 1px solid var(--line); line-height: 1.8; color: #adb6c4; }
+.allies-contact { background: var(--brand-blue); color: #061426; }
+.allies-contact-inner { display: grid; grid-template-columns: 1.2fr 1fr; align-items: center; gap: 60px; padding-block: 64px; }
+.allies-contact .eyebrow { margin-bottom: 22px; }
+.allies-contact h2 { font-size: clamp(48px, 6vw, 80px); line-height: .95; }
+.allies-contact-inner > div > p:not(.eyebrow) { max-width: 380px; font-size: 15px; line-height: 1.8; margin-bottom: 25px; }
+.allies-email { display: block; font-size: 12px; margin-top: 20px; overflow-wrap: anywhere; }
+@keyframes allies-turn { to { transform: rotate(360deg); } }
+@media (min-width: 901px) { .allies-partner:nth-of-type(even) .allies-logo { order: 2; } }
+@media (max-width: 900px) {
+  .allies-hero { gap: 32px; padding-block: 60px; grid-template-columns: 1.3fr 1fr; }
+  .allies-partner { gap: 28px; }
+  .allies-logo { padding-inline: 0; }
+  .allies-list-heading > span { display: none; }
+}
+@media (max-width: 640px) {
+  .allies-hero, .allies-partner, .allies-contact-inner { grid-template-columns: minmax(0, 1fr); }
+  .allies-hero { gap: 32px; padding-block: 48px; }
+  .allies-hero-side { max-width: none; }
+  .allies-emblem { display: none; }
+  .allies-hero-side > p { margin-top: 0; }
+  .allies-band { gap: 10px; padding-inline: 12px; font-size: 18px; letter-spacing: .02em; }
+  .allies-band svg { width: 14px; }
+  .allies-list { padding-block: 48px; }
+  .allies-partner { padding-block: 30px 42px; }
+  .allies-contact-inner { gap: 30px; padding-block: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .allies-emblem svg:first-child { animation: none; }
+  .allies-logo img { transition: none; }
+  .allies-logo:hover img { scale: 1; }
+}

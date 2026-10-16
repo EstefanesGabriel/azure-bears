@@ -8,7 +8,10 @@ import {
   Play,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { home, modalities, news, partners, products } from '../data/home'
+import { home, modalities, products } from '../data/home'
+// import { visibleNews, formatNewsDate } from '../data/news'
+import { visiblePartners } from '../data/partners'
+import { money, storeSettings } from '../data/store'
 import { site } from '../data/site'
 import { Media } from '../components/Media'
 import { SectionHeading } from '../components/SectionHeading'
@@ -116,81 +119,77 @@ function Hero() {
   )
 }
 
-function NewsSection() {
-  const latest = [...news]
-    .sort((a, b) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt))
-    .slice(0, 3)
-  return (
-    <section
-      id="novidades"
-      className="page-container section-space"
-      aria-labelledby="news-title"
-    >
-      <SectionHeading
-        id="news-title"
-        eyebrow={home.news.eyebrow}
-        title={home.news.title}
-        link={{ to: '/noticias', label: 'Todas as notícias' }}
-      />
-      {latest.length ? (
-        <div className="news-grid">
-          {latest.map((item) => (
-            <Link
-              to={`/noticias/${item.slug}`}
-              key={item.id}
-              className="news-card"
-              data-reveal
-              data-motion-card
-            >
-              <Media image={item.image} label="AZURE ATUAL" />
-              <p className="eyebrow card-category">
-                {item.category}{' '}
-                <span>
-                  {new Intl.DateTimeFormat('pt-BR', {
-                    dateStyle: 'medium',
-                    timeZone: 'America/Sao_Paulo',
-                  }).format(new Date(item.publishedAt))}
-                </span>
-              </p>
-              <h3>{item.title}</h3>
-              <p>{item.summary}</p>
-              <span className="text-link">
-                Ler notícia <ArrowUpRight size={17} aria-hidden="true" />
-              </span>
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <div className="news-empty" data-reveal>
-          <div className="journal-art" aria-hidden="true">
-            <span className="eyebrow">AZURE BEARS / JOURNAL</span>
-            <div className="journal-circle" />
-            <strong>
-              BEAR
-              <br />
-              WITH US.
-            </strong>
-            <span className="journal-bottom">
-              O PRÓXIMO CAPÍTULO É AZURE. <ArrowUpRight size={25} />
-            </span>
-          </div>
-          <div className="news-empty-copy">
-            <span className="small-label">
-              <span className="status-dot" />
-              Novidades em breve
-            </span>
-            <h3>{home.news.emptyTitle}</h3>
-            <p>{home.news.emptyDescription}</p>
-            <Link className="text-link" to="/noticias">
-              Nosso espaço de notícias{' '}
-              <ArrowRight size={19} aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      )}
-    </section>
-  )
-}
+// Notícias desativadas temporariamente. Descomente junto ao import e à seção abaixo.
+// function NewsSection() {
+//     const latest = visibleNews().slice(0, 3)
+//   return (
+//     <section
+//       id="novidades"
+//       className="page-container section-space"
+//       aria-labelledby="news-title"
+//     >
+//       <SectionHeading
+//         id="news-title"
+//         eyebrow={home.news.eyebrow}
+//         title={home.news.title}
+//         link={{ to: '/noticias', label: 'Todas as notícias' }}
+//       />
+//       {latest.length ? (
+//         <div className="news-grid">
+//           {latest.map((item) => (
+//             <Link
+//               to={`/noticias/${item.slug}`}
+//               key={item.id}
+//               className="news-card"
+//               data-reveal
+//               data-motion-card
+//             >
+//               <Media image={item.image} label="AZURE ATUAL" />
+//               <p className="eyebrow card-category">
+//                   {item.category}{' '}
+//                 <span>
+//                     {formatNewsDate(item.publishedAt)}
+//                 </span>
+//               </p>
+//               <h3>{item.title}</h3>
+//               <p>{item.summary}</p>
+//               <span className="text-link">
+//                 Ler notícia <ArrowUpRight size={17} aria-hidden="true" />
+//               </span>
+//             </Link>
+//           ))}
+//         </div>
+//       ) : (
+//         <div className="news-empty" data-reveal>
+//           <div className="journal-art" aria-hidden="true">
+//             <span className="eyebrow">AZURE BEARS / JOURNAL</span>
+//             <div className="journal-circle" />
+//             <strong>
+//               BEAR
+//               <br />
+//               WITH US.
+//             </strong>
+//             <span className="journal-bottom">
+//               O PRÓXIMO CAPÍTULO É AZURE. <ArrowUpRight size={25} />
+//             </span>
+//           </div>
+//           <div className="news-empty-copy">
+//             <span className="small-label">
+//               <span className="status-dot" />
+//               Novidades em breve
+//             </span>
+//             <h3>{home.news.emptyTitle}</h3>
+//             <p>{home.news.emptyDescription}</p>
+//             <Link className="text-link" to="/noticias">
+//               Nosso espaço de notícias{' '}
+//               <ArrowRight size={19} aria-hidden="true" />
+//             </Link>
+//           </div>
+//         </div>
+//       )}
+//     </section>
+//   )
+// }
 
 function TeamsSection() {
   return (
@@ -216,7 +215,7 @@ function TeamsSection() {
                 key={item.id}
               >
                 <Media image={item.image} label={item.name} />
-                <div>
+                <div className="team-card-caption">
                   <h3>{item.name}</h3>
                   <ArrowUpRight aria-hidden="true" />
                 </div>
@@ -249,7 +248,8 @@ function TeamsSection() {
 
 function StoreSection() {
   const [category, setCategory] = useState('Todos')
-  const visible = products
+  const catalog = storeSettings.preview ? [] : products.filter((product) => product.visible !== false)
+  const visible = catalog
     .filter((product) => category === 'Todos' || product.category === category)
     .slice(0, 4)
   return (
@@ -263,14 +263,14 @@ function StoreSection() {
         title={home.store.title}
         link={{ to: '/loja', label: 'Explore a loja' }}
       />
-      {products.length ? (
+      {catalog.length ? (
         <>
           <div
             className="category-filters"
             role="group"
             aria-label="Filtrar produtos"
           >
-            {['Todos', 'Vestuário', 'Acessórios'].map((item) => (
+            {['Todos', ...new Set(catalog.map((product) => product.category))].map((item) => (
               <button
                 key={item}
                 aria-pressed={item === category}
@@ -291,15 +291,7 @@ function StoreSection() {
               >
                 <Media image={item.image} label={item.name} />
                 <h3>{item.name}</h3>
-                {item.referencePrice !== undefined && (
-                  <p>
-                    Referência:{' '}
-                    {new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                    }).format(item.referencePrice)}
-                  </p>
-                )}
+                {item.priceCents !== undefined && <p>{money(item.priceCents)}</p>}
                 <span className="text-link">
                   Conhecer produto <ArrowUpRight size={17} aria-hidden="true" />
                 </span>
@@ -351,6 +343,7 @@ function StoreSection() {
 }
 
 function PartnersSection() {
+  const partners = visiblePartners()
   return (
     <section className="partners-section" aria-labelledby="partners-title" data-reveal>
       <div className="page-container">
@@ -415,7 +408,7 @@ export function HomePage() {
           </Link>
         </div>
       </section>
-      <NewsSection />
+      {/* <NewsSection /> */}
       <TeamsSection />
       <StoreSection />
       <PartnersSection />

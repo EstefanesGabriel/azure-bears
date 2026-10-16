@@ -1,19 +1,15 @@
-import type { Modality, NewsItem, Partner, Product } from '../models/content'
-import { visibleModalities } from './teams.ts'
+import type { Modality } from '../models/content'
+import { teamBackground, visibleModalities } from './teams.ts'
 
-export const news: NewsItem[] = []
-export const modalities: Modality[] = visibleModalities().map((game) => ({ id: game.id, slug: game.id, name: game.name }))
-export const products: Product[] = []
-export const partners: Partner[] = [
-  {
-    id: 'station',
-    name: 'Station',
-    logo: {
-      src: '/partners/station.png',
-      alt: 'Station — patrocinadora do Azure Bears',
-    },
-  },
-]
+export { news } from './news'
+export const modalities: Modality[] = visibleModalities().map((game) => ({
+  id: game.id,
+  slug: game.id,
+  name: game.name,
+  image: teamBackground(game.id),
+}))
+export { products } from './store.ts'
+export { partners } from './partners'
 
 export const home = {
   hero: {

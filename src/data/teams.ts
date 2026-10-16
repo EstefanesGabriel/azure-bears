@@ -64,21 +64,24 @@ export const teamModalities: TeamModality[] = [
     lines: [placeholderLine('league-of-legends', 1, 5)] },
   { id: 'counter-strike-2', name: 'Counter-Strike 2', category: 'FPS tático', aliases: ['cs', 'cs2'], icon: '/game-icons/counter-strike-2.png', visible: true,
     lines: [placeholderLine('counter-strike-2', 1, 5)] },
-  { id: 'brawl-stars', name: 'Brawl Stars', category: 'Arena mobile', icon: '/game-icons/brawl-stars.png', visible: true,
-    lines: [placeholderLine('brawl-stars', 1, 3)] },
-  { id: 'ea-fc', name: 'EA FC', category: 'Futebol virtual', aliases: ['fifa'], icon: '/game-icons/ea-fc.png', visible: true,
-    lines: [placeholderLine('ea-fc', 1, 1)] },
-  { id: 'free-fire', name: 'Free Fire', category: 'Battle royale', aliases: ['ff'], icon: '/game-icons/free-fire.png', visible: true,
-    lines: [placeholderLine('free-fire', 1, 4)] },
-  { id: 'teamfight-tactics', name: 'Teamfight Tactics', category: 'Estratégia', aliases: ['tft'], icon: '/game-icons/teamfight-tactics.png', visible: true,
-    lines: [placeholderLine('teamfight-tactics', 1, 1)] },
-  { id: 'wild-rift', name: 'Wild Rift', category: 'MOBA mobile', icon: '/game-icons/wild-rift.png', visible: true,
-    lines: [placeholderLine('wild-rift', 1, 5)] },
-  { id: 'rocket-league', name: 'Rocket League', category: 'Esporte e velocidade', aliases: ['rl'], icon: '/game-icons/rocket-league.png', visible: true,
-    lines: [placeholderLine('rocket-league', 1, 3)] },
+  // Equipes sem elenco no momento. Remova os // do cadastro desejado para reativar.
+  // { id: 'brawl-stars', name: 'Brawl Stars', category: 'Arena mobile', icon: '/game-icons/brawl-stars.png', visible: true,
+  //   lines: [placeholderLine('brawl-stars', 1, 3)] },
+  // { id: 'ea-fc', name: 'EA FC', category: 'Futebol virtual', aliases: ['fifa'], icon: '/game-icons/ea-fc.png', visible: true,
+  //   lines: [placeholderLine('ea-fc', 1, 1)] },
+  // { id: 'free-fire', name: 'Free Fire', category: 'Battle royale', aliases: ['ff'], icon: '/game-icons/free-fire.png', visible: true,
+  //   lines: [placeholderLine('free-fire', 1, 4)] },
+  // { id: 'teamfight-tactics', name: 'Teamfight Tactics', category: 'Estratégia', aliases: ['tft'], icon: '/game-icons/teamfight-tactics.png', visible: true,
+  //   lines: [placeholderLine('teamfight-tactics', 1, 1)] },
+  // { id: 'wild-rift', name: 'Wild Rift', category: 'MOBA mobile', icon: '/game-icons/wild-rift.png', visible: true,
+  //   lines: [placeholderLine('wild-rift', 1, 5)] },
+  // { id: 'rocket-league', name: 'Rocket League', category: 'Esporte e velocidade', aliases: ['rl'], icon: '/game-icons/rocket-league.png', visible: true,
+  //   lines: [placeholderLine('rocket-league', 1, 3)] },
 ]
 
 export const visibleModalities = () => teamModalities.filter((game) => game.visible)
+// Mesmo fundo na Home e nos cards da página de Equipes.
+export const teamBackground = (gameId: string): ImageAsset => ({ src: `/images/teams/${gameId}/home.png`, alt: '' })
 export const visibleLines = (game: TeamModality) => game.lines.filter((line) => line.visible)
 export const visiblePlayers = (line: TeamLine) => line.players.filter((player) => player.visible)
 

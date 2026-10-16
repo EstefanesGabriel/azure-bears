@@ -177,13 +177,13 @@ Abra `/api/forms` no mesmo endereço de produção do site. Essa consulta não e
 
 Depois de corrigir configurações no Pages, faça novo deploy e use **Verificar novamente** na revisão para preservar as respostas já preenchidas. Um diagnóstico `ok: true` confirma a configuração inicial; a gravação no Google só é comprovada após um envio e a presença da resposta na aba correta.
 
-## Loja: serviço preparado, página ainda pendente
+## Loja: pedidos, Pix e comprovantes
 
-A loja ainda não tem formulário no site. A API já aceita `kind: 'store'`, valida o catálogo e grava no arquivo da loja. Não foi criada uma loja com produtos fictícios.
+A página `/loja` possui catálogo, detalhes, tamanhos opcionais, revisão, Pix e anexo. Está em **prévia**, sem pagamentos ou envios, até cadastrar os dados oficiais. Consulte [o guia da loja](loja.md) para cadastrar produtos e ativar.
 
-Ao implementar a página, cadastrar produtos reais em `src/data/home.ts` com `requests: { enabled: true, variants: [...], sizes: [...], maxQuantity: 2 }`. Listas vazias representam ausência da opção. A quantidade máxima absoluta é 20. Ativar `store.enabled` somente quando a página estiver pronta.
+O cadastro fica em `src/data/store.ts`. A API valida produto, preço, quantidade, variação e tamanho no servidor. Só aceita comprovantes PNG/JPG/PDF de até 2 MB. O arquivo vai para uma pasta **restrita** do Google Drive (`STORE_RECEIPTS_FOLDER_ID`); a aba `Solicitacoes` recebe seu link, ID, nome, tipo e hash, sem o conteúdo binário. O status inicial é **Aguardando conferência**: não existe confirmação automática de pagamento nem reserva de estoque.
 
-Reutilizar `<SubmissionPanel kind="store" data={dadosRevisados} onLockChange={setSubmissionLocked} />`. Os dados devem seguir `storeSchema`: `productId`, `variant`, `size`, `quantity`, `fullName`, `email`, `phone` e `notes`. Nome do produto vem do catálogo no servidor. Durante envio/confirmacão pendente/sucesso, bloquear edição e navegação interna do formulário com `submissionLocked`, como nas seletivas. O recebimento registra interesse, sem pagamentos, estoque reservado ou confirmação de compra.
+Atualize `Code.gs`, `Columns.gs` e `appsscript.json`, execute `setupSheets` e `setupStoreReceipts`, autorize o novo acesso ao Drive e publique uma **nova versão** da implantação existente. As novas colunas são adicionadas ao final, preservando respostas anteriores. A mesma tentativa reaproveita protocolo e arquivo após uma falha na planilha. Não remova arquivos enquanto houver confirmações pendentes. Compartilhe a pasta e a planilha somente com as contas da diretoria que precisam desse acesso. O visitante não precisa acessar o Google.
 
 ## Manutenção e limites
 

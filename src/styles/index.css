@@ -913,14 +913,45 @@ a:hover .content-media img {
   line-height: 1.8;
   margin-block: 12px 18px;
 }
-.team-card .content-media {
+.team-card {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
   aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #111a2c;
 }
-.team-card > div:last-child {
+.team-card .content-media {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  aspect-ratio: auto;
+  z-index: -2;
+}
+.team-card .content-media img {
+  opacity: .55;
+  object-position: center;
+}
+.team-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #08090b05 20%, #08090b60 60%, #08090bf2 100%);
+}
+.team-card .media-fallback > * { display: none; }
+.team-card .team-card-caption {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 18px;
+  gap: 16px;
+  padding: clamp(18px, 2vw, 28px);
+  color: #fff;
+}
+.team-card-caption > svg {
+  flex-shrink: 0;
 }
 .team-card h3 {
   font-size: 30px;

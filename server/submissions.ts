@@ -1,5 +1,7 @@
 import { submissionSettings, type SubmissionKind } from '../src/data/submissions.ts'
 import { validateSubmission } from '../src/features/submissions/schema.ts'
+import { paymentReady } from '../src/data/store.ts'
+import { FORM_MAX_BYTES, STORE_MAX_BYTES } from '../src/features/submissions/receipt.ts'
 
 export interface SubmissionEnv {
   SUBMISSIONS_ENABLED?: string
@@ -9,7 +11,7 @@ export interface SubmissionEnv {
   APPS_SCRIPT_URL?: string
   APPS_SCRIPT_SECRET?: string
 }
-const maxBytes = 48 * 1024
+const maxBytes = STORE_MAX_BYTES
 const json = (body: unknown, status = 200) => Response.json(body, {
   status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
 })
@@ -31,7 +33,7 @@ function configurationIssues(env: SubmissionEnv) {
 }
 function isOpen(kind: SubmissionKind) {
   const config = submissionSettings[kind]
-  return config.enabled && (kind === 'store' ||
+  return config.enabled && (kind === 'store' ? paymentReady() :
     ('edition' in config && !!config.edition.trim() && !!config.processId.trim()))
 }
 async function readBody(request: Request) {
@@ -77,6 +79,8 @@ export async function handleSubmissions(request: Request, env: SubmissionEnv, se
   if (request.headers.get('content-type')?.split(';')[0].trim() !== 'application/json') return fail('INVALID_CONTENT_TYPE', 415)
   let input: unknown
   try { input = await readBody(request) } catch { return fail('INVALID_BODY', 400) }
+  if ((!input || typeof input !== 'object' || !('kind' in input) || input.kind !== 'store') &&
+      new TextEncoder().encode(JSON.stringify(input)).length > FORM_MAX_BYTES) return fail('INVALID_BODY', 400)
   const submission = validateSubmission(input)
   if (!submission) return fail('INVALID_DATA', 422)
   if (!isOpen(submission.kind)) return fail('CLOSED', 409)
@@ -98,7 +102,7 @@ export async function handleSubmissions(request: Request, env: SubmissionEnv, se
     const signature = await signPayload(payload, timestamp, env.APPS_SCRIPT_SECRET!)
     const result = await send(env.APPS_SCRIPT_URL!, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ payload, timestamp, signature }), redirect: 'follow', signal: AbortSignal.timeout(25_000),
+      body: JSON.stringify({ payload, timestamp, signature }), redirect: 'follow', signal: AbortSignal.timeout(submission.kind === 'store' ? 45_000 : 25_000),
     })
     if (!result.ok) return fail('UNAVAILABLE', 503)
     const receipt = await result.json() as { ok?: boolean; submissionId?: string; receivedAt?: string; code?: string }

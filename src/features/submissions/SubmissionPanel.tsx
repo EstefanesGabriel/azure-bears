@@ -3,6 +3,7 @@ import { submissionSettings, type SubmissionKind } from '../../data/submissions'
 import { site } from '../../data/site'
 import { Turnstile } from './Turnstile'
 import './submissions.css'
+import { FORM_MAX_BYTES, STORE_MAX_BYTES } from './receipt'
 
 type Availability = { siteKey: string; enabled: Record<SubmissionKind, boolean> }
 const definitiveErrors: Record<string, string> = {
@@ -68,7 +69,7 @@ export function SubmissionPanel({ kind, data, onLockChange }: {
     const pending = attempt.current
     try {
       const body = JSON.stringify({ ...pending.body, submissionId: pending.id, turnstileToken: token })
-      if (new TextEncoder().encode(body).length > 48 * 1024 && !uncertain.current) {
+      if (new TextEncoder().encode(body).length > (kind === 'store' ? STORE_MAX_BYTES : FORM_MAX_BYTES) && !uncertain.current) {
         setError(definitiveErrors.INVALID_BODY)
         attempt.current = null
         onLockChange(false)
@@ -77,7 +78,7 @@ export function SubmissionPanel({ kind, data, onLockChange }: {
       const response = await fetch('/api/forms', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body,
-        signal: AbortSignal.timeout(40_000),
+        signal: AbortSignal.timeout(kind === 'store' ? 65_000 : 40_000),
       })
       const result = await response.json() as { ok?: boolean; submissionId?: string; receivedAt?: string; code?: string }
       if (response.ok && result.ok === true && result.submissionId === pending.id &&
@@ -106,8 +107,8 @@ export function SubmissionPanel({ kind, data, onLockChange }: {
   }
 
   if (receipt) return <div className="submission-panel" ref={status} tabIndex={-1} role="status">
-    <h3>{kind === 'store' ? 'Solicitação recebida!' : 'Inscrição recebida!'}</h3>
-    <p>{kind === 'store' ? 'Seu interesse foi registrado. A equipe poderá entrar em contato. Este registro não confirma uma compra nem reserva um produto.' : 'Suas respostas foram registradas. A equipe poderá entrar em contato pelos dados informados.'}</p>
+    <h3>{kind === 'store' ? 'Pedido recebido!' : 'Inscrição recebida!'}</h3>
+    <p>{kind === 'store' ? 'Seu pedido e comprovante foram registrados. A equipe irá conferir o pagamento e entrar em contato. O envio não confirma automaticamente o pagamento nem a disponibilidade do produto.' : 'Suas respostas foram registradas. A equipe poderá entrar em contato pelos dados informados.'}</p>
     <p>Protocolo: <strong className="submission-protocol">{receipt}</strong></p>
   </div>
 
@@ -119,7 +120,7 @@ export function SubmissionPanel({ kind, data, onLockChange }: {
 
   return <div className="submission-panel" aria-busy={busy}>
     <h3>Antes de enviar</h3>
-    <p>Usaremos suas respostas para {kind === 'store' ? 'gerenciar seu interesse nos produtos e entrar em contato' : 'avaliar sua candidatura e entrar em contato sobre este processo'}. Elas serão armazenadas em planilhas privadas do Google, acessíveis às pessoas autorizadas da Azure Bears. O envio utiliza Google e Cloudflare.</p>
+    <p>Usaremos suas respostas para {kind === 'store' ? 'gerenciar seu pedido, conferir o pagamento e entrar em contato' : 'avaliar sua candidatura e entrar em contato sobre este processo'}. Elas serão armazenadas em planilhas privadas do Google, acessíveis às pessoas autorizadas da Azure Bears. {kind === 'store' && 'O comprovante será armazenado em uma pasta privada no Google Drive, com o link na planilha. '}O envio utiliza Google e Cloudflare.</p>
     <p>Para informações sobre o uso dos dados ou solicitar acesso, correção ou exclusão, escreva para <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</p>
     <label className="submission-ack"><input type="checkbox" checked={accepted} disabled={busy || uncertain.current} onChange={(event) => setAccepted(event.target.checked)} />Li o aviso acima e estou ciente da finalidade do envio das minhas respostas.</label>
     {accepted && <Turnstile siteKey={availability.siteKey} action={kind} refresh={refresh}

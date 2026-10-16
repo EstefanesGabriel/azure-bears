@@ -7,6 +7,8 @@ import { handleSubmissions, signPayload } from '../server/submissions.ts'
 import { submissionSettings } from '../src/data/submissions.ts'
 import { validateSubmission } from '../src/features/submissions/schema.ts'
 import { products } from '../src/data/home.ts'
+import { storeSettings, visibleProducts } from '../src/data/store.ts'
+import { validReceipt, RECEIPT_MAX_BYTES, readReceipt } from '../src/features/submissions/receipt.ts'
 import { activeSteps, emptyValues, questionsFor } from '../src/features/recruitment/form.ts'
 import { games } from '../src/features/recruitment/config.ts'
 
@@ -14,6 +16,28 @@ const secret = 'test-only-secret-never-deploy-1234567890'
 const env = { SUBMISSIONS_ENABLED: 'true', SITE_ORIGIN: 'https://azure.example', TURNSTILE_SITE_KEY: 'public-test-key', TURNSTILE_SECRET_KEY: 'private-test-key', APPS_SCRIPT_URL: 'https://script.google.com/macros/s/test/exec', APPS_SCRIPT_SECRET: secret }
 const request = (body, options = {}) => new Request('https://azure.example/api/forms', {
   method: 'POST', headers: { origin: env.SITE_ORIGIN, 'content-type': 'application/json' }, body: JSON.stringify(body), ...options,
+})
+const testReceipt = () => ({ name: 'teste.pdf', mimeType: 'application/pdf', base64: Buffer.from('%PDF-1.4\nTeste fictício de integração, sem dados financeiros.\n%%EOF').toString('base64') })
+
+test('comprovantes exigem formato e tamanho válidos, sem confiar na extensão', async () => {
+  assert.equal(validReceipt(testReceipt()), true)
+  for (const receipt of [
+    { ...testReceipt(), mimeType: 'image/png' },
+    { ...testReceipt(), name: '../receipt.pdf' },
+    { ...testReceipt(), base64: Buffer.from('<html>fake</html>').toString('base64') },
+    { ...testReceipt(), base64: '%PDF-not-base64' },
+    { ...testReceipt(), mimeType: 'image/svg+xml' },
+    { ...testReceipt(), base64: '' },
+  ]) assert.equal(validReceipt(receipt), false)
+  const maximum = Buffer.alloc(RECEIPT_MAX_BYTES, 0)
+  maximum.write('%PDF-1.4')
+  assert.equal(validReceipt({ ...testReceipt(), base64: maximum.toString('base64') }), true)
+  assert.equal(validReceipt({ ...testReceipt(), base64: Buffer.concat([maximum, Buffer.from('1')]).toString('base64') }), false)
+  assert.equal(validReceipt({ name: 'image.png', mimeType: 'image/png', base64: Buffer.from([137,80,78,71,13,10,26,10]).toString('base64') }), true)
+  assert.equal(validReceipt({ name: 'image.jpg', mimeType: 'image/jpeg', base64: Buffer.from([255,216,255,224]).toString('base64') }), true)
+  const file = new File([Buffer.from(testReceipt().base64, 'base64')], 'teste.pdf', { type: 'application/pdf' })
+  assert.deepEqual(await readReceipt(file), testReceipt())
+  await assert.rejects(readReceipt(new File(['<html>'], 'fake.pdf', { type: 'application/pdf' })))
 })
 
 test('diagnóstico público identifica configuração inválida sem expor credenciais', async () => {
@@ -66,9 +90,12 @@ function competitiveApplication(game = 'valorant') {
 }
 function fakeGoogle() {
   const sheets = new Map()
+  const files = new Map()
   const appends = []
   let blocked = false
-  const properties = { APPS_SCRIPT_SECRET: secret, RECRUITMENT_SPREADSHEET_ID: 'recruitment-file', STORE_SPREADSHEET_ID: 'store-file' }
+  let failAppend = false
+  let publicFolder = false
+  const properties = { APPS_SCRIPT_SECRET: secret, RECRUITMENT_SPREADSHEET_ID: 'recruitment-file', STORE_SPREADSHEET_ID: 'store-file', STORE_RECEIPTS_FOLDER_ID: 'receipts-folder' }
   const book = (id) => ({
     getSheetByName: (name) => sheets.get(`${id}:${name}`),
     insertSheet: (name) => {
@@ -92,11 +119,29 @@ function fakeGoogle() {
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: (text) => ({ text, setMimeType() { return this } }) },
     Utilities: { Charset: { UTF_8: 'utf8' }, DigestAlgorithm: { SHA_256: 'sha256' },
       computeHmacSha256Signature: (value, key) => [...createHmac('sha256', key).update(value).digest()],
-      computeDigest: (_, value) => [...createHash('sha256').update(value).digest()],
+      computeDigest: (_, value) => [...createHash('sha256').update(Array.isArray(value) ? Buffer.from(value) : value).digest()],
+      base64Decode: (value) => [...Buffer.from(value, 'base64')],
+      newBlob: (bytes, mimeType, name) => ({ getBytes: () => bytes, mimeType, name }),
     },
+    DriveApp: { Access: { PRIVATE: 'private' }, getFolderById: (id) => {
+      assert.equal(id, 'receipts-folder')
+      return { getSharingAccess: () => publicFolder ? 'anyone' : 'private',
+        getFilesByName: (name) => ({ hasNext: () => files.has(name), next: () => files.get(name) }),
+        createFile: (blob) => {
+          let description = ''
+          const id = `file-${files.size + 1}`
+          const file = { getDescription: () => description, setDescription: (value) => { description = value },
+            getMimeType: () => blob.mimeType, getBlob: () => blob, getSharingAccess: () => 'private',
+            getId: () => id, getUrl: () => `https://drive.google.com/file/d/${id}/view` }
+          files.set(blob.name, file)
+          return file
+        },
+      }
+    } },
     LockService: { getScriptLock: () => { let held = false; return { tryLock: () => (held = !blocked), hasLock: () => held, releaseLock: () => { held = false } } } },
     SpreadsheetApp: { openById: book },
     Sheets: { Spreadsheets: { Values: { append: (body, id, range, options) => {
+      if (failAppend) { failAppend = false; throw new Error('temporary failure') }
       const tab = range.match(/^'([^']+)'/)[1]
       const sheet = sheets.get(`${id}:${tab}`)
       appends.push({ id, tab, options })
@@ -115,14 +160,19 @@ function fakeGoogle() {
     return Response.json(post(JSON.parse(options.body)))
   }
   let currentBody = '{}'
-  return { sheets, appends, calls, post, context, book, block: () => { blocked = true }, sendFor: (body) => { currentBody = JSON.stringify(body); return send } }
+  return { sheets, files, appends, calls, post, context, book, properties,
+    failNextAppend: () => { failAppend = true }, makeFolderPublic: () => { publicFolder = true },
+    block: () => { blocked = true }, sendFor: (body) => { currentBody = JSON.stringify(body); return send } }
 }
 
 test('integração valida, assina e acrescenta respostas sem duplicar tentativas', async (t) => {
   const original = structuredClone(submissionSettings)
+  const originalStore = structuredClone(storeSettings)
+  const originalProducts = products.slice()
   for (const kind of ['competitive', 'directorate']) Object.assign(submissionSettings[kind], { enabled: true, edition: 'test-edition', processId: `test-${kind}` })
   submissionSettings.store.enabled = true
-  t.after(() => { Object.assign(submissionSettings, original); products.length = 0 })
+  Object.assign(storeSettings, { preview: false, fulfillment: 'Retirada de teste', pix: { key: 'test@example.com', recipient: 'Titular de teste', qrImage: '', copyPaste: '' } })
+  t.after(() => { Object.assign(submissionSettings, original); Object.assign(storeSettings, originalStore); products.splice(0, products.length, ...originalProducts) })
 
   await t.test('gravação RAW, protocolo, repetição idempotente e conflito de conteúdo', async () => {
     const google = fakeGoogle()
@@ -234,13 +284,54 @@ test('integração valida, assina e acrescenta respostas sem duplicar tentativas
   })
 
   await t.test('loja usa catálogo confiável e arquivo separado; rejeita opções e quantidades inválidas', async () => {
-    products.push({ id: 'test-shirt', slug: 'test-shirt', name: 'Produto de teste', category: 'Vestuário', requests: { enabled: true, variants: ['Azul'], sizes: ['M'], maxQuantity: 2 } })
-    const body = { ...application(), kind: 'store', data: { productId: 'test-shirt', productName: 'Nome adulterado', variant: 'Azul', size: 'M', quantity: 1, fullName: 'Teste', email: 'test@example.com', phone: '41999999999', notes: '' } }
+    products.push({ id: 'test-shirt', slug: 'test-shirt', name: 'Produto de teste', category: 'Vestuário', priceCents: 7990, requests: { enabled: true, variants: ['Azul'], sizes: ['M'], maxQuantity: 2 } })
+    const body = { ...application(), kind: 'store', data: { productId: 'test-shirt', productName: 'Nome adulterado', variant: 'Azul', size: 'M', quantity: 2, fullName: 'Teste', email: 'test@example.com', phone: '41999999999', notes: '', quotedUnitPriceCents: 7990, totalPriceCents: 1, receipt: testReceipt() } }
     const google = fakeGoogle()
-    assert.equal((await handleSubmissions(request(body), env, google.sendFor(body))).status, 200)
+    const response = await handleSubmissions(request(body), env, google.sendFor(body))
+    assert.equal(response.status, 200)
+    const confirmation = await response.json()
+    assert.deepEqual(await (await handleSubmissions(request(body), env, google.sendFor(body))).json(), confirmation)
     assert.equal(google.appends[0].id, 'store-file')
+    assert.equal(google.appends.length, 1)
+    assert.equal(google.files.size, 1)
+    const rows = google.sheets.get('store-file:Solicitacoes').rows
+    const field = (key) => rows[1][rows[0].findIndex((label) => label.startsWith(key + ' |'))]
+    assert.equal(field('totalPriceCents'), 15980)
+    assert.equal(field('receiptUrl'), 'https://drive.google.com/file/d/file-1/view')
+    assert.equal(field('receiptName'), 'teste.pdf')
+    assert.equal(rows[1][9], 'Aguardando conferência')
+    assert.equal(JSON.stringify(rows).includes(body.data.receipt.base64), false)
     assert.equal(JSON.stringify(google.sheets.get('store-file:Solicitacoes').rows).includes('Nome adulterado'), false)
-    for (const change of [{ size: 'XX' }, { quantity: 3 }, { productId: 'missing' }]) assert.equal(validateSubmission({ ...body, data: { ...body.data, ...change } }), null)
+    for (const change of [{ size: 'XX' }, { size: '' }, { quantity: 3 }, { productId: 'missing' }, { quotedUnitPriceCents: 1 }, { receipt: undefined }]) assert.equal(validateSubmission({ ...body, data: { ...body.data, ...change } }), null)
+    const fresh = { ...body, submissionId: randomUUID() }
+    const recovering = fakeGoogle()
+    recovering.failNextAppend()
+    assert.equal((await handleSubmissions(request(fresh), env, recovering.sendFor(fresh))).status, 503)
+    assert.equal(recovering.files.size, 1)
+    assert.equal((await handleSubmissions(request(fresh), env, recovering.sendFor(fresh))).status, 200)
+    assert.equal(recovering.files.size, 1, 'retentativa reaproveita o arquivo privado')
+    assert.equal(recovering.appends.length, 1)
+    const unsafe = fakeGoogle()
+    unsafe.makeFolderPublic()
+    assert.equal((await handleSubmissions(request(fresh), env, unsafe.sendFor(fresh))).status, 503)
+    assert.equal(unsafe.files.size, 0)
+    assert.equal(unsafe.appends.length, 0)
+    const unconfigured = fakeGoogle()
+    delete unconfigured.properties.STORE_RECEIPTS_FOLDER_ID
+    assert.equal((await handleSubmissions(request(fresh), env, unconfigured.sendFor(fresh))).status, 503)
+    assert.equal(unconfigured.appends.length, 0)
+
+    products.push({ id: 'test-mug', slug: 'test-mug', name: 'Caneca teste', category: 'Acessórios', priceCents: 1000, requests: { enabled: true, variants: [], sizes: [], maxQuantity: 2 } })
+    const mug = { ...body, submissionId: randomUUID(), data: { ...body.data, productId: 'test-mug', size: '', variant: '', quotedUnitPriceCents: 1000 } }
+    assert.ok(validateSubmission(mug))
+    assert.equal(validateSubmission({ ...mug, data: { ...mug.data, size: 'M' } }), null)
+    storeSettings.preview = true
+    assert.equal(validateSubmission(mug), null)
+    assert.equal((await (await handleSubmissions(new Request('https://azure.example/api/forms'), env)).json()).enabled.store, false)
+    storeSettings.preview = false
+    products.at(-1).visible = false
+    assert.equal(validateSubmission(mug), null)
+    assert.equal(visibleProducts().some((product) => product.id === 'test-mug'), false)
   })
 
   await t.test('dados inválidos, consentimento ausente, edição antiga e origem externa não chegam ao Google', async () => {

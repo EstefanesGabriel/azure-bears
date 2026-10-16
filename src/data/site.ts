@@ -28,7 +28,7 @@ export const navigation = [
   { label: 'Início', path: '/' },
   { label: 'Sobre nós', path: '/sobre' },
   { label: 'Equipes', path: '/equipes' },
-  { label: 'Notícias', path: '/noticias' },
+  // { label: 'Notícias', path: '/noticias' },
   { label: 'Loja', path: '/loja' },
   { label: 'Parceiros', path: '/parceiros' },
 ] as const

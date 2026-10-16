@@ -11,6 +11,8 @@ export interface NewsItem {
   category: string
   publishedAt: string
   image?: ImageAsset
+  visible?: boolean
+  content: { heading?: string; paragraphs: string[] }[]
 }
 
 export interface Modality {
@@ -24,7 +26,11 @@ export interface Product {
   id: string
   slug: string
   name: string
-  category: 'Vestuário' | 'Acessórios'
+  category: string
+  description?: string
+  visible?: boolean
+  priceCents?: number
+  badge?: string
   referencePrice?: number
   image?: ImageAsset
   requests?: { enabled: boolean; variants: string[]; sizes: string[]; maxQuantity: number }
@@ -33,6 +39,10 @@ export interface Product {
 export interface Partner {
   id: string
   name: string
+  visible?: boolean
+  category?: string
+  headline?: string
+  description?: string[]
   url?: string
   logo?: ImageAsset
 }

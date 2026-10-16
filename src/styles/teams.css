@@ -23,8 +23,9 @@
 .squad-search input { width: 220px; background: transparent; border: 0; color: white; font: inherit; font-size: 13px; padding: 8px; min-width: 0; }
 .squad-result-count { margin-bottom: 20px; font-size: 11px; color: #a5abba; }
 .squad-games { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.squad-game { display: flex; flex-direction: column; justify-content: space-between; min-height: 285px; padding: 24px; background: #10151e; border: 1px solid #ffffff16; overflow: hidden; }
-.squad-game-featured { background: #092f67; border-color: #2c64ae; }
+.squad-game { position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: space-between; min-height: 285px; padding: 24px; background: #10151e; border: 1px solid #ffffff16; overflow: hidden; }
+.squad-game-background { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: .55; pointer-events: none; }
+.squad-game::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, #08090b05 20%, #08090b60 60%, #08090bf2 100%); }
 .squad-game-top { display: flex; justify-content: space-between; gap: 14px; color: #a6b9d5; }
 .squad-index { font-family: var(--font-display); font-size: 21px; line-height: 1; opacity: .65; }
 .squad-game-mark { display: grid; place-items: center; width: 90px; height: 90px; margin: 22px 0; }

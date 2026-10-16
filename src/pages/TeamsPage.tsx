@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Crosshair, Search, Users, X } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { site } from '../data/site'
-import { findTeamRoute, visibleLines, visibleModalities, visiblePlayers, type TeamModality, type TeamPlayer } from '../data/teams'
+import { findTeamRoute, teamBackground, visibleLines, visibleModalities, visiblePlayers, type TeamModality, type TeamPlayer } from '../data/teams'
 import type { ImageAsset } from '../models/content'
 import '../styles/teams.css'
 
@@ -23,6 +23,12 @@ function GameMark({ game }: { game: TeamModality }) {
   return <span className="squad-game-mark" aria-hidden="true">
     {failed ? <Crosshair strokeWidth={1} /> : <img src={game.icon} alt="" loading="lazy" onError={() => setFailed(true)} />}
   </span>
+}
+
+function GameBackground({ gameId }: { gameId: string }) {
+  const [failedSource, setFailedSource] = useState('')
+  const image = teamBackground(gameId)
+  return failedSource === image.src ? null : <img className="squad-game-background" src={image.src} alt="" loading="lazy" decoding="async" onError={() => setFailedSource(image.src)} />
 }
 
 function TeamBreadcrumb({ game, lineName }: { game?: TeamModality; lineName?: string }) {
@@ -68,7 +74,8 @@ function TeamsIndex() {
       </div>
       <p className="squad-result-count" role="status">{shown.length} {shown.length === 1 ? 'modalidade' : 'modalidades'}</p>
       <div className="squad-games">
-        {shown.map((game) => <Link to={`/equipes/${game.id}`} key={game.id} className={`squad-game ${game.id === 'valorant' ? 'squad-game-featured' : ''}`} data-reveal data-motion-card>
+        {shown.map((game) => <Link to={`/equipes/${game.id}`} key={game.id} className="squad-game" data-reveal data-motion-card>
+          <GameBackground gameId={game.id} />
           <div className="squad-game-top"><span className="eyebrow">{game.category}</span><span className="squad-index">{String(games.indexOf(game) + 1).padStart(2, '0')}</span></div>
           <GameMark game={game} />
           <div className="squad-game-bottom"><div><h3>{game.name}</h3><span>Explore as lines</span></div><span className="squad-round-arrow"><ArrowUpRight aria-hidden="true" /></span></div>
@@ -138,7 +145,7 @@ export function TeamsPage() {
   return <div className="squad-page page-container">
     <TeamBreadcrumb game={game} lineName={line.name} />
     <header className="squad-roster-hero" data-reveal>
-      <div><Link className="text-link" to={`/equipes/${game.id}`}><ArrowLeft size={17} /> Todas as lines</Link><p className="eyebrow text-accent">{game.name} / Azure Bears</p><h1>{line.name}</h1><p>{line.description}</p>{line.placeholder && <span className="squad-tag">Apresentação em preparação</span>}</div>
+      <div><Link className="text-link" to={`/equipes/${game.id}`}><ArrowLeft size={17} /> Todas as lines</Link><p className="eyebrow text-accent">{game.name} / Azure Bears</p><h1>{line.name}</h1><p>{line.description}</p></div>
       <TeamImage image={line.photo} label={line.name} />
     </header>
     <section className="squad-roster-section" aria-labelledby="roster-title">

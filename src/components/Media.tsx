@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { ImageAsset } from '../models/content'
 
 export function Media({
@@ -9,10 +10,11 @@ export function Media({
   label: string
   className?: string
 }) {
+  const [failedSrc, setFailedSrc] = useState<string>()
   return (
     <div className={`content-media ${className}`}>
-      {image ? (
-        <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+      {image && image.src !== failedSrc ? (
+        <img src={image.src} alt={image.alt} loading="lazy" decoding="async" onError={() => setFailedSrc(image.src)} />
       ) : (
         <div className="media-fallback" aria-hidden="true">
           <span>AZURE BEARS</span>
